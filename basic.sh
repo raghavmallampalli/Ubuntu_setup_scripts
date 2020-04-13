@@ -21,7 +21,7 @@ execute () {
         exit 1
     fi
 }
-spatialPrint "Do not execute this file without reading it first. Also make sure you know how to delete added repositories"
+spatialPrint "Do not execute this file without reading it first."
 
 # Speed up the process
 # Env Var NUMJOBS overrides automatic detection

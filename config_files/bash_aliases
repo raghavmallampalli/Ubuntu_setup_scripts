@@ -12,6 +12,8 @@ alias cat="bat -p"
 alias gettime='sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d" " -f5-8)Z";' # gets time from google and saves it
 alias onedrives='onedrive --synchronize'
 alias startup='onedrive --synchronize; update'
-alias calibreupdate='sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin' # url as of 8th october 2019
+alias calibreupdate='sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin' # url as of 12th April 2020
 alias list-repos="apt-cache policy |grep http |awk '{print $2 $3}' |sort -u"
 alias ggr="git log --all --decorate --oneline --graph"
+alias rn="ranger"
+alias xo="xdg-open"

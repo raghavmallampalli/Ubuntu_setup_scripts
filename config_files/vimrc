@@ -16,3 +16,5 @@ imap <silent> <End> <C-o>g<End>
 setlocal linebreak
 setlocal nolist
 setlocal display+=lastline
+
+set number
