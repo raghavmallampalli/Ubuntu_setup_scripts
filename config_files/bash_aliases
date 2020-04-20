@@ -1,7 +1,7 @@
 alias jn="jupyter notebook"
 alias jl="jupyter lab"
 alias maxvol="pactl set-sink-volume @DEFAULT_SINK@ 150%"
-alias download="wget --random-wait -r -p --no-parent -e robots=off -U mozilla"
+alias dl="wget --random-wait -r -p --no-parent -e robots=off -U mozilla"
 alias server="ifconfig | grep inet && python3 -m http.server"
 alias gpom="git push origin master"
 alias update="sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y"
@@ -9,11 +9,15 @@ alias aria="aria2c --file-allocation=none -c -x 10 -s 10"
 alias ydl="youtube-dl -f 140 --add-metadata --metadata-from-title \"%(artist)s - %(title)s\" -o \"%(title)s.%(ext)s\""
 alias cat="bat -p"
 
-alias gettime='sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d" " -f5-8)Z";' # gets time from google and saves it
+alias ls='ls -l --color'
+alias la='ls -la --color'
+alias gettime='sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d" " -f5-8)Z";'
 alias onedrives='onedrive --synchronize'
 alias startup='onedrive --synchronize; update'
 alias calibreupdate='sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin' # url as of 12th April 2020
+alias fzfupdate='cd ~/.fzf && git pull && ./install && cd -'
 alias list-repos="apt-cache policy |grep http |awk '{print $2 $3}' |sort -u"
 alias ggr="git log --all --decorate --oneline --graph"
 alias rn="ranger"
 alias xo="xdg-open"
+alias vim="vim -O" # open multiple files as vertical splits

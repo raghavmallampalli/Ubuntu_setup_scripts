@@ -44,7 +44,7 @@ execute sudo apt-get update -y
 execute sudo apt-get install build-essential curl g++ cmake cmake-curses-gui pkg-config checkinstall -y
 execute sudo apt-get install libopenblas-dev liblapacke-dev libatlas-base-dev gfortran -y
 execute sudo apt-get install git wget curl xclip -y
-execute sudo apt-get install vim-gui-common vim-runtime -y
+execute sudo apt-get install vim -y
 execute sudo apt-get install htop -y
 execute sudo apt-get install run-one xbindkeys xbindkeys-config wmctrl xdotool -y
 cp ./config_files/vimrc ~/.vimrc
@@ -88,21 +88,12 @@ ln -s /opt/.zsh/bash_aliases ~/.bash_aliases
     echo "# Switching to 256-bit colour by default so that zsh-autosuggestion's suggestions are not suggested in white, but in grey instead"
     echo "export TERM=xterm-256color"
 
-    echo "# Setting the default text editor to micro, a terminal text editor with shortcuts similar to what you'd encounter in an IDE"
-    echo "export VISUAL=micro"
+    echo "# Setting the default text editor to code"
+    echo "export VISUAL=code"
+
+    echo "setopt nonomatch # allows name* matching in apt, ls etc. use with caution"
+    echo "SHARE_HISTORY "
 } >> ~/.zshrc
-
-
-# Now download and install bat
-if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -gt 19 ]]; then  
-    execute sudo apt-get install bat -y # Ubuntu 19.10 and above have bat in universe repo
-else
-    spatialPrint "Installing bat, a handy replacement for cat"
-    latest_bat_setup=$(curl --silent "https://api.github.com/repos/sharkdp/bat/releases/latest" | grep "deb" | grep "browser_download_url" | head -n 1 | cut -d \" -f 4)
-    aria2c --file-allocation=none -c -x 10 -s 10 --dir /tmp -o bat.deb $latest_bat_setup
-    execute sudo dpkg -i /tmp/bat.deb
-    execute sudo apt-get install -f
-fi
 
 # Install code editor of your choice
 if [[ ! -n $CIINSTALL ]]; then
@@ -135,7 +126,10 @@ fi
 # untested: 
 # installing python3, octave
 execute sudo apt-get install python-pip -y
-execute sudo apt-get install python3 python3-dev python3-pip python3-setuptools -y
+if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -lt 19 ]]; then  
+    execute sudo apt-get install python3 -y # 20.04 has python3 installed by default
+fi
+execute sudo apt-get install python3-dev python3-pip python3-setuptools -y
 execute pip3 install jupyter jupyter-lab notebook
 execute pip3 install python-dateutil tabulate # basic libraries
 execute pip3 install matplotlib numpy scipy pandas h5py # standard scientific libraries

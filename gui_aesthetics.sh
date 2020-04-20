@@ -34,17 +34,22 @@ sudo add-apt-repository ppa:qbittorrent-team/qbittorrent-stable
 sudo add-apt-repository ppa:papirus/papirus
 execute sudo apt-get update -y
 
-spatialPrint "Tweaks, themes and extensions"
-
+spatialPrint "Tweaks, fonts, themes and extensions"
 
 execute sudo apt-get install gnome-tweaks gnome-shell-extensions chrome-gnome-shell -y # Works for Mozilla, Chromium based, Opera 
 echo "GNOME extensions: install GNOME shell extensions browser extension. Alt+F2, r, enter to restart gnome-shell after installing extensions."
-echo "Check out Alternate-tab, Caffeine, CPU Power Manager, Dash to Dock, Steal My Focus, Removable Drive Menu"
+echo "Check out Alternate-tab, Caffeine, CPU Power Manager, Steal My Focus"
 
 execute sudo cp ./config_files/images_numix.zip /usr/lib/libreoffice/share/config/ # change theme from libreoffice settings
 execute sudo apt-get install numix-gtk-theme papirus-icon-theme -y
 gsettings set org.gnome.desktop.interface gtk-theme "Numix"
 gsettings set org.gnome.desktop.interface icon-theme "Papirus" # modify .desktop files if you don't like icons
+
+execute mkdir /usr/share/fonts/
+sudo cp -r ./config_files/fonts /usr/share/fonts/truetype/
+
+
+spatialPrint "GUI programs"
 
 execute sudo apt-get install vivaldi-stable -y # Chromium based browser. Buggy but feature intensive.
 execute sudo apt-get install speedcrunch -y # Superior calculator
@@ -60,10 +65,10 @@ echo "Refer README to complete simplescreenrecorder setup. Cannot be done from t
 execute sudo apt-get install texmaker -y # GUI LaTex client
 execute sudo apt-get install qbittorrent -y # The best torrent client
 
-# IMPORTANT: Discord and VLC are snap utilities. Uncomment if you wish to install them.
-# Go to their respective site pages for deb packages if you do not wish to use snap
+# IMPORTANT: VLC is a snap utility. Uncomment if you wish to install.
+# Go to their site pages for deb package if you do not wish to use snap
 # Also check out vlsub and subsync if you install vlc
-# execute sudo snap install discord vlc -y
+# execute sudo snap install vlc -y
 
 echo "Visit and install: "
 echo "Master PDF Editor: https://code-industry.net/free-pdf-editor/" # NOT open source

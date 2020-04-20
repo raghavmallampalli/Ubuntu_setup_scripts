@@ -1,0 +1,17 @@
+###################
+.DS_Store
+.hg
+.svn
+*.vscode
+node_modules
+.wine/
+prefix32/
+.PlayOnLinux/
+.cache/
+.gvfs/
+###################
+# Temporary files
+*.kate-swp
+*.swp
+*.swo
+*~

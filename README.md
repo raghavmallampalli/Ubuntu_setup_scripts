@@ -23,3 +23,12 @@ Installs WINE, PlayOnLinux and attempts to correctly install MusicBee, a Windows
 
 For a list of useful commands and stuff, check out [Help.md](./Help.md)
 
+## vim useful shortcuts
+
+:%s/search/replace/gc is search and replace with prompt for each match
+:h opt is help
+:difft, :diffo!
+fzf.vim and ranger.vim bindings (see vimrc)
+:tabp, :tabn (avoid using windows)
+Ctrl-W and arrow keys to navigate splits
+read up on vim registers
