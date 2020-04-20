@@ -32,3 +32,7 @@ fzf.vim and ranger.vim bindings (see vimrc)
 :tabp, :tabn (avoid using windows)
 Ctrl-W and arrow keys to navigate splits
 read up on vim registers
+
+## known bugs/failures:
+bash_alias file exists already causes exit
+pip3 installation fails (end of basic.sh)

@@ -21,7 +21,7 @@ execute () {
         exit 1
     fi
 }
-spatialPrint "Do not execute this file without reading it first."
+spatialPrint "Do not execute this file without reading it first. If it exits without completing install run 'sudo apt --fix-broken install'"
 
 # Speed up the process
 # Env Var NUMJOBS overrides automatic detection
@@ -70,9 +70,6 @@ echo "source /opt/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ~/.zshrc
 # Change default shell to zsh
 command -v zsh | sudo tee -a /etc/shells
 sudo chsh -s "$(command -v zsh)" "${USER}"
-echo 'bindkey '^R' history-incremental-search-backward' >> ~/.zshrc #untested # Ctrl+R for history search
-echo 'setopt nonomatch' >> ~/.zshrc # untested # Regex matching for locate, apt commmands. Use with caution.
-echo 'setopt SHARE_HISTORY' >> ~/.zshrc #untested # share history between terminals
 execute sudo apt-get install fonts-powerline -y
 execute sudo apt-get install aria2 -y
 
@@ -92,7 +89,7 @@ ln -s /opt/.zsh/bash_aliases ~/.bash_aliases
     echo "export VISUAL=code"
 
     echo "setopt nonomatch # allows name* matching in apt, ls etc. use with caution"
-    echo "SHARE_HISTORY "
+    echo "setopt SHARE_HISTORY"
 } >> ~/.zshrc
 
 # Install code editor of your choice
@@ -125,17 +122,18 @@ fi
 
 # untested: 
 # installing python3, octave
+execute sudo apt-get install octave -y # comment out if you have access to MATLAB. 
+
 execute sudo apt-get install python-pip -y
 if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -lt 19 ]]; then  
     execute sudo apt-get install python3 -y # 20.04 has python3 installed by default
 fi
 execute sudo apt-get install python3-dev python3-pip python3-setuptools -y
-execute pip3 install jupyter jupyter-lab notebook
-execute pip3 install python-dateutil tabulate # basic libraries
-execute pip3 install matplotlib numpy scipy pandas h5py # standard scientific libraries
-execute pip3 install scikit-learn scikit-image # basic ML libraries
-execute pip3 install keras tensorflow
-execute sudo apt-get install octave -y # comment out if you have access to MATLAB. 
+/usr/bin/pip3 install jupyter jupyter-lab notebook
+execute /usr/bin/pip3 install python-dateutil tabulate # basic libraries
+execute /usr/bin/pip3 install matplotlib numpy scipy pandas h5py # standard scientific libraries
+execute /usr/bin/pip3 install scikit-learn scikit-image # basic ML libraries
+execute /usr/bin/pip3 install keras tensorflow
 # Also consider sage if you have no access to Mathematica. https://doc.sagemath.org/html/en/installation/binary.html 
 
 echo "Installation complete. Restart and install other three scripts. Read them first. They are not yet fully tested."
