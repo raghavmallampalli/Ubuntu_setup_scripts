@@ -38,7 +38,7 @@ echo "Download and install Windscribe with binaries. https://windscribe.com/guid
 # fuzzy finder and superior grep finders. https://github.com/junegunn/fzf 
 # fzf<CR>, C-t, C-r, Alt-C
 # fzf git installation. apt package available 19.10+
-if ! [ -x "$(command -v fzf)"]; then
+if [ -x "$(command -v fzf)"]; then
     execute git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     /bin/bash ~/.fzf/install
     

@@ -11,4 +11,8 @@ sudo rm -i /etc/apt/sources.list.d/PPA_Name.list # Removes Repository
 sudo dpkg --configure -a
 sudo apt --fix-broken install
 
+# individual packages:
+# vim: do, dO, dp, :map, :reg
+# fzf: fzf<CR>, C-t, C-r, Alt-C
+# ranger: rn, zh, dD, <SPC>, rest vim keybindings
 ```

@@ -44,20 +44,21 @@ execute sudo apt-get update -y
 execute sudo apt-get install build-essential curl g++ cmake cmake-curses-gui pkg-config checkinstall -y
 execute sudo apt-get install libopenblas-dev liblapacke-dev libatlas-base-dev gfortran -y
 execute sudo apt-get install git wget curl xclip -y
-execute sudo apt-get install vim -y
+execute sudo apt-get install vim vim-gnome -y # vim gnome adds system clipboard functionality
 execute sudo apt-get install htop -y
 execute sudo apt-get install run-one xbindkeys xbindkeys-config wmctrl xdotool -y
 cp ./config_files/vimrc ~/.vimrc
 
 # zsh is a shell that's better than bash. zim is a framework/plugin management system for it.
-# Checks if ZSH is partially or completely installed to remove the folders and reinstall it
+# a branched version of zim is being installed. read the branched version of the docs.
+# Checks if zsh is partially or completely installed to remove the folders and reinstall it
+spatialPrint "Setting up zsh + zim now"
 rm -rf ~/.z*
 zsh_folder=/opt/.zsh/
 if [[ -d $zsh_folder ]];then
 	sudo rm -r /opt/.zsh/*
 fi
 
-spatialPrint "Setting up zsh + zim now"
 execute sudo apt-get install zsh -y
 sudo mkdir -p /opt/.zsh/ && sudo chmod ugo+w /opt/.zsh/
 git clone --recursive --quiet --branch zsh-5.2 https://github.com/zimfw/zimfw.git /opt/.zsh/zim
@@ -86,7 +87,7 @@ ln -s /opt/.zsh/bash_aliases ~/.bash_aliases
     echo "export TERM=xterm-256color"
 
     echo "# Setting the default text editor to code"
-    echo "export VISUAL=code"
+    echo "export VISUAL=vim" 
 
     echo "setopt nonomatch # allows name* matching in apt, ls etc. use with caution"
     echo "setopt SHARE_HISTORY"
@@ -121,19 +122,27 @@ elif [ "$tempvar" = "q" ];then
 fi
 
 # untested: 
-# installing python3, octave
+# installing octave, python3
 execute sudo apt-get install octave -y # comment out if you have access to MATLAB. 
 
 execute sudo apt-get install python-pip -y
 if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -lt 19 ]]; then  
     execute sudo apt-get install python3 -y # 20.04 has python3 installed by default
 fi
-execute sudo apt-get install python3-dev python3-pip python3-setuptools -y
-/usr/bin/pip3 install jupyter jupyter-lab notebook
-execute /usr/bin/pip3 install python-dateutil tabulate # basic libraries
-execute /usr/bin/pip3 install matplotlib numpy scipy pandas h5py # standard scientific libraries
-execute /usr/bin/pip3 install scikit-learn scikit-image # basic ML libraries
-execute /usr/bin/pip3 install keras tensorflow
+
+if [[ $(command -v conda) || (-n $CIINSTALL) ]]; then
+    PIP="pip install"
+else
+    execute sudo apt-get install python3-dev python3-tk python3-setuptools -y
+    if [[ ! -n $CIINSTALL ]]; then sudo apt-get install python3-pip; fi
+    PIP="sudo pip3 install --upgrade" # add -H flag to sudo if this doesn't work
+fi
+
+execute $PIP jupyter # jupyter-lab notebook # lab not working
+execute $PIP python-dateutil tabulate # basic libraries
+execute $PIP matplotlib numpy scipy pandas h5py # standard scientific libraries
+execute $PIP scikit-learn scikit-image # basic ML libraries
+execute $PIP keras tensorflow
 # Also consider sage if you have no access to Mathematica. https://doc.sagemath.org/html/en/installation/binary.html 
 
 echo "Installation complete. Restart and install other three scripts. Read them first. They are not yet fully tested."

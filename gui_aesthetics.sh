@@ -24,11 +24,11 @@ execute () {
 echo "Proceed if you have run basic.sh and gone through this sh file. Also make sure you know how to delete added repositories. Ctrl+C and do so first if not. [ENTER] to continue."
 read dump
 
-curl -sS https://download.spotify.com/debian/pubkey.gpg | sudo apt-key add - 
+curl -sS https://download.spotify.com/debian/pubkey.gpg | sudo apt-key add - # check if the file remains post installation
 echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
 sudo add-apt-repository multiverse
 sudo add-apt-repository ppa:hluk/copyq
-wget -qO- http://repo.vivaldi.com/stable/linux_signing_key.pub | sudo apt-key add -
+wget -qO- http://repo.vivaldi.com/stable/linux_signing_key.pub | sudo apt-key add - # check if the file remains post installation
 execute sudo add-apt-repository "deb [arch=i386,amd64] http://repo.vivaldi.com/stable/deb/ stable main"
 sudo add-apt-repository ppa:qbittorrent-team/qbittorrent-stable
 sudo add-apt-repository ppa:papirus/papirus
