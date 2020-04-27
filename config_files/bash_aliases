@@ -23,3 +23,33 @@ alias onedrives='onedrive --synchronize'
 alias startup='onedrive --synchronize; update'
 alias calibreupdate='sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin' # url as of 12th April 2020
 alias fzfupdate='cd ~/.fzf && git pull && ./install && cd -'
+
+alias tsux="tmux -u new-session -s General \; \
+            neww \; \
+              send-keys 'htop' C-m \; \
+              split-window -h \; \
+              send-keys 'nvtop' C-m \; \
+              split-window -v \; \
+              send-keys 'watch sensors' C-m \; \
+              rename-window 'performance' \; \
+            select-window -l" #default
+alias trox="tmux -u new-session -s ROS\; \
+            neww \; \
+              send-keys 'roscore' C-m \; \
+              split-window -h \; \
+              send-keys 'htop' C-m \; \
+              split-window -v \; \
+              send-keys 'watch sensors' C-m \; \
+              rename-window 'performance' \; \
+            select-window -l" #ROS
+
+alias tsetux="tmux -u new-session -s 'Setup'\; \
+	      	send-keys 'vimdiff ~/.vimrc ~/Documents/Ubuntu_setup_scripts/config_files/vimrc' C-m  \; \
+		rename-window 'vimrc' \; \
+	      neww \; \
+	      	send-keys 'vimdiff ~/.bash_aliases ~/Documents/Ubuntu_setup_scripts/config_files/bash_aliases' C-m \; \
+		rename-window 'aliases' \; \
+	      neww \; \
+	      	send-keys 'vimdiff ~/.tmux.conf.local ~/Documents/Ubuntu_setup_scripts/config_files/tmux.conf.local' C-m \; \
+		rename-window 'tmux conf' \; \
+	      select-window -l"  # edit setup scripts. Edit paths of setup scripts here.

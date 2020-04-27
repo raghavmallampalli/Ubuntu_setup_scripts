@@ -40,14 +40,15 @@ execute sudo apt-get install gnome-tweaks gnome-shell-extensions chrome-gnome-sh
 echo "GNOME extensions: install GNOME shell extensions browser extension. Alt+F2, r, enter to restart gnome-shell after installing extensions."
 echo "Check out Alternate-tab, Caffeine, CPU Power Manager, Steal My Focus"
 
+execute sudo apt-get install libreoffice -y
 execute sudo cp ./config_files/images_numix.zip /usr/lib/libreoffice/share/config/ # change theme from libreoffice settings
 execute sudo apt-get install numix-gtk-theme papirus-icon-theme -y
 gsettings set org.gnome.desktop.interface gtk-theme "Numix"
 gsettings set org.gnome.desktop.interface icon-theme "Papirus" # modify .desktop files if you don't like icons
 
 execute mkdir /usr/share/fonts/
-sudo cp -r ./config_files/fonts /usr/share/fonts/truetype/
-
+execute sudo cp -r ./config_files/fonts /usr/share/fonts/
+execute fc-cache - f -v #untested
 
 spatialPrint "GUI programs"
 

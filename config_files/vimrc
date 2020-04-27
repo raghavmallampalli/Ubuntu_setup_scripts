@@ -4,16 +4,31 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
+" Plugins Installed:
+" lightline: better status bar
+" fzf.vim: fuzzy finder for vim
+" ranger.vim: ranger plugin for vim
+" vim-peekaboo: Pop up menu with registers
 call plug#begin('~/.vim/plugged')
 	Plug 'itchyny/lightline.vim'
 	Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 	Plug 'junegunn/fzf.vim'
-	Plug 'tpope/vim-surround'
 	Plug 'francoiscabrol/ranger.vim'
-	Plug ''
+	Plug 'junegunn/vim-peekaboo'
 call plug#end()
 
+" Miscellaneous useful maps
+let mapleader = "," " yank to system register uses leader
+" vimdiff maps. also check do and dp
+noremap dO :diffoff!<CR> 
+" turns off diff for all active buffers
+noremap dt :diffthis<CR>
+noremap <leader>s :set scrollbind!<CR>
+noremap <leader>n :set relativenumber!<CR>
+
+colorscheme ron
 syntax on
+set mouse=a
 
 "This is for wraping left and right so that cursor left at the beginning of the line goes to end of the previous line
 set whichwrap+=<,>,h,l,[,] 
@@ -32,19 +47,9 @@ setlocal linebreak
 setlocal nolist
 setlocal display+=lastline
 
-" Shows line number to the left. :set nonu to turn off.
+" Shows line number to the left. set nonu to turn off.
 set number
 highlight LineNr ctermfg=grey
-
-" Miscellaneous leader maps
-
-let mapleader = "," " yank to system register uses leader
-" vimdiff maps. also check do and dp
-noremap dO :diffoff!<CR> 
-" turns off diff for all active buffers
-noremap dt :diffthis<CR>
-noremap <leader>s :set scrollbind!<CR>
-noremap <leader>n :set relativenumber!<CR>
 
 " copy to system register (primary/clipboard)
 noremap <leader>Y "*y
@@ -52,24 +57,27 @@ noremap <leader>P "*p
 noremap <leader>y "+y
 noremap <leader>p "+p
 
-" Tab shortcuts
+" ranger vim integration
+let g:ranger_map_keys = 0
+map <leader>r :RangerWorkingDirectoryNewTab<CR>
+let g:ranger_command_override = 'ranger --cmd "set show_hidden=true"'
+
+" Work with lightline
+set laststatus=2
+set noshowmode
+
+" Work with fzf.vim 
+map <leader>f :Files<CR> " Check ^x, ^v while in fzf
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit',
+  \ 'ctrl-y': {lines -> setreg('*', join(lines, "\n"))}}
+" https://github.com/junegunn/fzf.vim for more detailed list
+
+" Tab shortcuts: avoid using tabs unless you have mouse mode on. Pain in the ass.
 noremap <leader>t<Right> :tabn<CR>
 noremap <leader>tl :tabn<CR>
 noremap <leader>t<Left> :tabp<CR>
 noremap <leader>th :tabp<CR>
 noremap <leader>tn :tabnew<CR>
-
-" Working with plugins
-" lightline
-set laststatus=2
-set noshowmode
-
-" ranger.vim
-let g:ranger_map_keys = 0
-map <leader>r :RangerWorkingDirectoryNewTab<CR>
-let g:ranger_command_override = 'ranger --cmd "set show_hidden=true"'
-
-" fzf.vim 
-map <leader>f :Files<CR> 
-" Check ^x, ^v while in fzf
-" https://github.com/junegunn/fzf.vim for more detailed list

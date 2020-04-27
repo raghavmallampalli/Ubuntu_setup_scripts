@@ -20,7 +20,8 @@ read dump
 
 # download and install bat, cat with syntax highlighting
 if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -gt 19 ]]; then  
-    execute sudo apt-get install bat -y # Ubuntu 19.10 and above have bat in universe repo
+    # execute sudo apt-get install bat -y
+    echo "Ubuntu 19.10 and above are supposed to have bat in universe repo. Does not work at the moment."
 else
     echo "Installing bat, a handy replacement for cat"
     latest_bat_setup=$(curl --silent "https://api.github.com/repos/sharkdp/bat/releases/latest" | grep "deb" | grep "browser_download_url" | head -n 1 | cut -d \" -f 4)

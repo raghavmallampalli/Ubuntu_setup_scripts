@@ -21,8 +21,8 @@ execute () {
         exit 1
     fi
 }
-spatialPrint "Do not execute this file without reading it first. If it exits without completing install run 'sudo apt --fix-broken install'"
-
+spatialPrint "Do not execute this file without reading it first. If it exits without completing install run 'sudo apt --fix-broken install'. [ENTER] to continue."
+read dump
 # Speed up the process
 # Env Var NUMJOBS overrides automatic detection
 if [[ -n $NUMJOBS ]]; then
@@ -44,7 +44,7 @@ execute sudo apt-get update -y
 execute sudo apt-get install build-essential curl g++ cmake cmake-curses-gui pkg-config checkinstall -y
 execute sudo apt-get install libopenblas-dev liblapacke-dev libatlas-base-dev gfortran -y
 execute sudo apt-get install git wget curl xclip -y
-execute sudo apt-get install vim vim-gnome -y # vim gnome adds system clipboard functionality
+execute sudo apt-get install vim vim-gui-common -y # vim gnome adds system clipboard functionality
 execute sudo apt-get install htop -y
 execute sudo apt-get install run-one xbindkeys xbindkeys-config wmctrl xdotool -y
 cp ./config_files/vimrc ~/.vimrc
@@ -55,28 +55,38 @@ cp ./config_files/vimrc ~/.vimrc
 spatialPrint "Setting up zsh + zim now"
 rm -rf ~/.z*
 zsh_folder=/opt/.zsh/
+if [ -f ~/.zshrc ]; then
+   mv ~/.zshrc ~/.zshrc_backup
+   echo ".zshrc backed up to .zshrc_backup. Deleting."
+fi
 if [[ -d $zsh_folder ]];then
 	sudo rm -r /opt/.zsh/*
 fi
 
 execute sudo apt-get install zsh -y
 sudo mkdir -p /opt/.zsh/ && sudo chmod ugo+w /opt/.zsh/
-git clone --recursive --quiet --branch zsh-5.2 https://github.com/zimfw/zimfw.git /opt/.zsh/zim
-ln -s /opt/.zsh/zim/ ~/.zim
-ln -s /opt/.zsh/zim/templates/zimrc ~/.zimrc
-ln -s /opt/.zsh/zim/templates/zlogin ~/.zlogin
-ln -s /opt/.zsh/zim/templates/zshrc ~/.zshrc
-git clone https://github.com/zsh-users/zsh-autosuggestions /opt/.zsh/zsh-autosuggestions
-echo "source /opt/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ~/.zshrc
+export ZIM_HOME=/opt/.zsh/zim
+curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
+#git clone --recursive --quiet --branch zsh-5.2 https://github.com/zimfw/zimfw.git /opt/.zsh/zim
+#ln -s /opt/.zsh/zim/ ~/.zim
+#ln -s /opt/.zsh/zim/templates/zimrc ~/.zimrc
+#ln -s /opt/.zsh/zim/templates/zlogin ~/.zlogin
+#ln -s /opt/.zsh/zim/templates/zshrc ~/.zshrc
+#git clone https://github.com/zsh-users/zsh-autosuggestions /opt/.zsh/zsh-autosuggestions
+#echo "source /opt/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ~/.zshrc
 # Change default shell to zsh
 command -v zsh | sudo tee -a /etc/shells
 sudo chsh -s "$(command -v zsh)" "${USER}"
-execute sudo apt-get install fonts-powerline -y
-execute sudo apt-get install aria2 -y
+
+execute sudo apt-get install fonts-powerline aria2 -y
 
 # Create bash aliases and link bash and zsh aliases
+if [ -f ~/.bash_aliases ]; then
+   mv ~/.bash_aliases ~/.bash_aliases_backup
+   echo "Bash aliases backed up to .bash_aliases_backup. Deleting."
+fi
 cp ./config_files/bash_aliases /opt/.zsh/bash_aliases
-ln -s /opt/.zsh/bash_aliases ~/.bash_aliases
+ln -s -f /opt/.zsh/bash_aliases ~/.bash_aliases
 
 {
     echo "if [ -f ~/.bash_aliases ]; then"
@@ -87,11 +97,26 @@ ln -s /opt/.zsh/bash_aliases ~/.bash_aliases
     echo "export TERM=xterm-256color"
 
     echo "# Setting the default text editor to code"
-    echo "export VISUAL=vim" 
+    echo "export VISUAL=/usr/bin/vim"
+    echo "export EDITOR=/usr/bin/vim"
 
     echo "setopt nonomatch # allows name* matching in apt, ls etc. use with caution"
     echo "setopt SHARE_HISTORY"
 } >> ~/.zshrc
+
+# tmux set up. Untested.
+execute sudo apt-get install tmux -y
+git clone https://github.com/gpakosz/.tmux.git ~/.tmux
+if [ -f ~/.tmux.conf ]; then
+   mv ~/.tmux.conf ~/.tmux.conf_backup
+   echo ".tmux.conf backed up to .tmux.conf_backup. Deleting."
+fi
+ln -s -f ~/.tmux/.tmux.conf ~/.tmux.conf
+if [ -f ~/.tmux.conf.local ]; then
+   mv ~/.tmux.conf.local ~/.tmux.conf.local_backup
+   echo ".tmux.conf.local backed up to .tmux.conf.local_backup. Deleting."
+fi
+cp ./config_files/tmux.conf.local ~/.tmux.conf.local
 
 # Install code editor of your choice
 if [[ ! -n $CIINSTALL ]]; then
@@ -107,7 +132,7 @@ if [ "$tempvar" = "v" ]; then
     execute sudo apt-get update -y
     execute sudo apt-get install code -y # or code-insiders
     execute rm microsoft.gpg
-    execute code --install-extension Shan.code-settings-sync # untested, extension that saves your installed extensions and settings to github
+    execute code --install-extension Shan.code-settings-sync # extension that saves your installed extensions and settings to github
 elif [ "$tempvar" = "a" ]; then
     execute sudo add-apt-repository ppa:webupd8team/atom
     execute sudo apt-get update -y; execute sudo apt-get install atom -y
@@ -121,13 +146,11 @@ elif [ "$tempvar" = "q" ];then
     echo "Skipping this step"
 fi
 
-# untested: 
 # installing octave, python3
 execute sudo apt-get install octave -y # comment out if you have access to MATLAB. 
 
-execute sudo apt-get install python-pip -y
 if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -lt 19 ]]; then  
-    execute sudo apt-get install python3 -y # 20.04 has python3 installed by default
+    execute sudo apt-get install python-pip -y # 20.04 does not have python2 pip in repo.
 fi
 
 if [[ $(command -v conda) || (-n $CIINSTALL) ]]; then
