@@ -9,6 +9,8 @@ alias gettime='sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | gre
 alias list-repos="apt-cache policy |grep http |awk '{print $2 $3}' |sort -u"
 alias xo="xdg-open"
 alias vim="vim -O" # open multiple files as vertical splits
+alias python='python3' # simple scam
+alias pip='pip3'
 
 alias gpom="git push origin master"
 alias jn="jupyter notebook"
@@ -23,12 +25,13 @@ alias onedrives='onedrive --synchronize'
 alias startup='onedrive --synchronize; update'
 alias calibreupdate='sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin' # url as of 12th April 2020
 alias fzfupdate='cd ~/.fzf && git pull && ./install && cd -'
+alias bashtop='~/.bashtop/bashtop'
 
-alias tsux="tmux -u new-session -s General \; \
+alias tgex="tmux -u new-session -s General \; \
             neww \; \
               send-keys 'htop' C-m \; \
               split-window -h \; \
-              send-keys 'nvtop' C-m \; \
+              send-keys 'df' C-m \; \
               split-window -v \; \
               send-keys 'watch sensors' C-m \; \
               rename-window 'performance' \; \
@@ -52,4 +55,5 @@ alias tsetux="tmux -u new-session -s 'Setup'\; \
 	      neww \; \
 	      	send-keys 'vimdiff ~/.tmux.conf.local ~/Documents/Ubuntu_setup_scripts/config_files/tmux.conf.local' C-m \; \
 		rename-window 'tmux conf' \; \
-	      select-window -l"  # edit setup scripts. Edit paths of setup scripts here.
+	      select-window -l"  # edit setup scripts.
+# Edit paths of setup scripts here.

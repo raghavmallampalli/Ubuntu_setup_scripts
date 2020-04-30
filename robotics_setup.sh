@@ -21,14 +21,14 @@ execute () {
         exit 1
     fi
 }
-spatialPrint "Proceed if you have run basic.sh. If it exits without completing install run 'sudo apt --fix-broken install'. Untested script. [ENTER] to continue"
+spatialPrint "Proceed if you have run basic.sh and cd'ed to the parent folder of this script. Untested script. [ENTER] to continue"
 read dump
 
 if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -eq 18 ]]; then  
     sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
     curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | sudo apt-key add -
     execute sudo apt-get update -y
-    execute sudo apt-get install ros-melodic-desktop-full -y
+    sudo apt-get install ros-melodic-desktop-full -y # allowing output to be visible to understand what's going on.
     echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
     echo "source /opt/ros/melodic/setup.zsh" >> ~/.zshrc
     execute sudo apt-get install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential -y
@@ -38,3 +38,7 @@ if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head
 elif [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -eq 20 ]]; then
     echo "ROS noetic release: May 23rd 2020."
 fi
+
+echo "Visit https://www.arduino.cc/en/Main/Software and download Arduino IDE"
+
+echo "Installation completed."

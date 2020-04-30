@@ -21,7 +21,7 @@ execute () {
         exit 1
     fi
 }
-spatialPrint "Do not execute this file without reading it first. If it exits without completing install run 'sudo apt --fix-broken install'. [ENTER] to continue."
+spatialPrint "Do not execute this file without reading it first and cd'ing to the parent folder of this script. If it exits without completing install run 'sudo apt --fix-broken install'. [ENTER] to continue."
 read dump
 # Speed up the process
 # Env Var NUMJOBS overrides automatic detection
@@ -53,20 +53,24 @@ cp ./config_files/vimrc ~/.vimrc
 # a branched version of zim is being installed. read the branched version of the docs.
 # Checks if zsh is partially or completely installed to remove the folders and reinstall it
 spatialPrint "Setting up zsh + zim now"
-rm -rf ~/.z*
 zsh_folder=/opt/.zsh/
 if [ -f ~/.zshrc ]; then
-   mv ~/.zshrc ~/.zshrc_backup
-   echo ".zshrc backed up to .zshrc_backup. Deleting."
+   cp -L ~/.zshrc ~/backup_zshrc
+   echo ".zshrc backed up to ~/backup_zshrc. Deleting."
 fi
 if [[ -d $zsh_folder ]];then
 	sudo rm -r /opt/.zsh/*
 fi
+rm -rf ~/.z*
 
 execute sudo apt-get install zsh -y
 sudo mkdir -p /opt/.zsh/ && sudo chmod ugo+w /opt/.zsh/
 export ZIM_HOME=/opt/.zsh/zim
+command -v zsh | sudo tee -a /etc/shells
+sudo chsh -s "$(command -v zsh)" "${USER}"
 curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
+echo "zmodule marzocchi/zsh-notify" >> ~/.zimrc
+echo "run 'zimfw install' after reboot"
 #git clone --recursive --quiet --branch zsh-5.2 https://github.com/zimfw/zimfw.git /opt/.zsh/zim
 #ln -s /opt/.zsh/zim/ ~/.zim
 #ln -s /opt/.zsh/zim/templates/zimrc ~/.zimrc
@@ -75,15 +79,13 @@ curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | 
 #git clone https://github.com/zsh-users/zsh-autosuggestions /opt/.zsh/zsh-autosuggestions
 #echo "source /opt/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ~/.zshrc
 # Change default shell to zsh
-command -v zsh | sudo tee -a /etc/shells
-sudo chsh -s "$(command -v zsh)" "${USER}"
 
 execute sudo apt-get install fonts-powerline aria2 -y
 
 # Create bash aliases and link bash and zsh aliases
 if [ -f ~/.bash_aliases ]; then
-   mv ~/.bash_aliases ~/.bash_aliases_backup
-   echo "Bash aliases backed up to .bash_aliases_backup. Deleting."
+   cp -L ~/.bash_aliases ~/backup_bash_aliases
+   echo "Bash aliases backed up to ~/backup_bash_aliases. Deleting."
 fi
 cp ./config_files/bash_aliases /opt/.zsh/bash_aliases
 ln -s -f /opt/.zsh/bash_aliases ~/.bash_aliases
@@ -103,18 +105,19 @@ ln -s -f /opt/.zsh/bash_aliases ~/.bash_aliases
     echo "setopt nonomatch # allows name* matching in apt, ls etc. use with caution"
     echo "setopt SHARE_HISTORY"
 } >> ~/.zshrc
+echo "Edit .zshrc and change 'bindkey -e' to 'bindkey -v'"
 
-# tmux set up. Untested.
+# tmux set up.
 execute sudo apt-get install tmux -y
 git clone https://github.com/gpakosz/.tmux.git ~/.tmux
 if [ -f ~/.tmux.conf ]; then
-   mv ~/.tmux.conf ~/.tmux.conf_backup
-   echo ".tmux.conf backed up to .tmux.conf_backup. Deleting."
+   cp -L ~/.tmux.conf ~/backup_tmux.conf
+   echo ".tmux.conf backed up to ~/backup_tmux.conf. Deleting."
 fi
 ln -s -f ~/.tmux/.tmux.conf ~/.tmux.conf
 if [ -f ~/.tmux.conf.local ]; then
-   mv ~/.tmux.conf.local ~/.tmux.conf.local_backup
-   echo ".tmux.conf.local backed up to .tmux.conf.local_backup. Deleting."
+   cp -L ~/.tmux.conf.local ~/backup_tmux.conf.local
+   echo ".tmux.conf.local backed up to ~/backup_tmux.conf.local. Deleting."
 fi
 cp ./config_files/tmux.conf.local ~/.tmux.conf.local
 
@@ -161,11 +164,12 @@ else
     PIP="sudo pip3 install --upgrade" # add -H flag to sudo if this doesn't work
 fi
 
-execute $PIP jupyter # jupyter-lab notebook # lab not working
+execute $PIP jupyter notebook
+execute $PIP jupyterlab # lab may not work, comment out if it doesn't
 execute $PIP python-dateutil tabulate # basic libraries
 execute $PIP matplotlib numpy scipy pandas h5py # standard scientific libraries
 execute $PIP scikit-learn scikit-image # basic ML libraries
-execute $PIP keras tensorflow
+# execute $PIP keras tensorflow # ML libraries. Occupy large amounts of space.
 # Also consider sage if you have no access to Mathematica. https://doc.sagemath.org/html/en/installation/binary.html 
-
-echo "Installation complete. Restart and install other three scripts. Read them first. They are not yet fully tested."
+echo "Remove backup files after copying required data into new files"
+echo "Installation completed. Restart and install other scripts. Read them first. They are not yet fully tested."

@@ -14,7 +14,7 @@ execute () {
     fi
 }
 
-echo "Proceed if you have run all the other sh files and gone through this sh file. Ctrl+C and do so first if not. [ENTER] to continue."
+echo "Proceed if you have run all the other sh files, cd'ed to the parent folder of this script and gone through it. Ctrl+C and do so first if not. [ENTER] to continue."
 read dump
 
 # Anything involving wine involves a high failure rate. This may not (almost definitely will not) work out of the box.
@@ -57,4 +57,4 @@ else
     execute python3 ./config_files/Shortcut_setter.py 'MusicBee Previous' "sh `realpath ~/Documents/xdotool_scripts/musicbee_prev.sh`" '<Control><Alt>i'
 fi
 
-echo "Installation completed. Also check out MiniLyrics"
+echo "Installation completed. Also check out MiniLyrics."

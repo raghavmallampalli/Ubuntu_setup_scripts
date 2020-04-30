@@ -21,7 +21,7 @@ execute () {
     fi
 }
 
-echo "Proceed if you have run basic.sh and gone through this sh file. Also make sure you know how to delete added repositories. Ctrl+C and do so first if not. [ENTER] to continue."
+echo "Proceed if you have run basic.sh, cd'ed to the partent folder of this script and gone through this sh file. Also make sure you know how to delete added repositories. Ctrl+C and do so first if not. [ENTER] to continue."
 read dump
 
 curl -sS https://download.spotify.com/debian/pubkey.gpg | sudo apt-key add - # check if the file remains post installation
@@ -32,6 +32,7 @@ wget -qO- http://repo.vivaldi.com/stable/linux_signing_key.pub | sudo apt-key ad
 execute sudo add-apt-repository "deb [arch=i386,amd64] http://repo.vivaldi.com/stable/deb/ stable main"
 sudo add-apt-repository ppa:qbittorrent-team/qbittorrent-stable
 sudo add-apt-repository ppa:papirus/papirus
+sudo add-apt-repository ppa:danielrichter2007/grub-customizer
 execute sudo apt-get update -y
 
 spatialPrint "Tweaks, fonts, themes and extensions"
@@ -76,4 +77,5 @@ echo "Master PDF Editor: https://code-industry.net/free-pdf-editor/" # NOT open 
 echo "AutomaThemely: https://github.com/C2N14/AutomaThemely" # Change themes automatically at night
 
 echo "Run calibreupdate after restarting. Install monstre icon theme, count pages, find duplicates, goodreads and goodreads sync plugins. Set up."
+echo "Installation completed."
 echo "MusicBee is the best offline music player created by man. It is only available for Windows. Try the wine...sh file next to install it."

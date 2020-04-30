@@ -14,7 +14,7 @@ execute () {
     fi
 }
 
-echo "Proceed if you have run basic.sh and gone through this sh file. Ctrl+C and do so first if not. [ENTER] to continue."
+echo "Proceed if you have run basic.sh, cd'ed to the partent folder of this script and gone through it. Ctrl+C and do so first if not. [ENTER] to continue."
 read dump
 
 
@@ -50,7 +50,7 @@ if [ -x "$(command -v fzf)"]; then
     tempvar=${tempvar:-q}
     if [ "$tempvar" = "s" ]; then # Silver searcher installation
         execute sudo apt-get install silversearcher-ag -y
-        execute cp ./config_files/globalgitignore ~/.gitignore
+        cp ./config_files/globalgitignore ~/.gitignore
         echo "export FZF_DEFAULT_COMMAND='ag -p ~/.gitignore -g \"\"'" >> ~/.zshrc
         echo "export FZF_DEFAULT_COMMAND='ag -p ~/.gitignore -g \"\"'" >> ~/.bashrc
     elif [ "$tempvar" = "r" ]; then # Ripgrep installation
@@ -59,7 +59,7 @@ if [ -x "$(command -v fzf)"]; then
         else
             curl -LO https://github.com/BurntSushi/ripgrep/releases/download/11.0.2/ripgrep_11.0.2_amd64.deb; sudo dpkg -i ripgrep_11.0.2_amd64.deb; rm ripgrep_11.0.2_amd64.deb # last check version. swap out with newest version if it works
         fi
-        execute cp ./config_files/globalgitignore ~/.rgignore
+        cp ./config_files/globalgitignore ~/.rgignore
         echo "export FZF_DEFAULT_COMMAND='rg --files --hidden'" >> ~/.zshrc
         echo "export FZF_DEFAULT_COMMAND='rg --files --hidden'" >> ~/.bashrc
     elif [ "$tempvar" = "q" ]; then
@@ -83,3 +83,4 @@ execute sudo apt-get install libhdf5-dev exiftool ffmpeg -y
 # dependencies for CLI OneDrive client
 execute sudo apt-get install libcurl4-openssl-dev libsqlite3-dev libnotify-dev -y
 echo "Dependencies installed. Visit and follow instructions in https://github.com/abraunegg/onedrive/blob/master/docs/INSTALL.md"
+echo "Installation completed."

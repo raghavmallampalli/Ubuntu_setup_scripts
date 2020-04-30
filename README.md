@@ -29,7 +29,7 @@ For a list of useful commands and stuff, check out [help](Help.md)
 
 ### Ubuntu 20.04
 * bat does not work
-* ripgrep does not install for some reason
+* ripgrep does not install
 * vivaldi package not out
 * inkspace not out
 * ros out on 23rd May 2020
