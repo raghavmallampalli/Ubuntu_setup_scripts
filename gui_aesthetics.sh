@@ -39,17 +39,20 @@ spatialPrint "Tweaks, fonts, themes and extensions"
 
 execute sudo apt-get install gnome-tweaks gnome-shell-extensions chrome-gnome-shell -y # Works for Mozilla, Chromium based, Opera 
 echo "GNOME extensions: install GNOME shell extensions browser extension. Alt+F2, r, enter to restart gnome-shell after installing extensions."
-echo "Check out Alternate-tab, Caffeine, CPU Power Manager, Steal My Focus"
+echo "Check out Alternate-tab, Caffeine, CPU Power Manager, Steal My Focus and Dash to Dock"
 
 execute sudo apt-get install libreoffice -y
 execute sudo cp ./config_files/images_numix.zip /usr/lib/libreoffice/share/config/ # change theme from libreoffice settings
-execute sudo apt-get install numix-gtk-theme papirus-icon-theme -y
-gsettings set org.gnome.desktop.interface gtk-theme "Numix"
-gsettings set org.gnome.desktop.interface icon-theme "Papirus" # modify .desktop files if you don't like icons
+
+if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -lt 19 ]]; then
+    execute sudo apt-get install numix-gtk-theme papirus-icon-theme -y
+    gsettings set org.gnome.desktop.interface gtk-theme "Numix"
+    gsettings set org.gnome.desktop.interface icon-theme "Papirus" # modify .desktop files if you don't like icons
+fi
 
 execute mkdir /usr/share/fonts/
 execute sudo cp -r ./config_files/fonts /usr/share/fonts/
-execute fc-cache - f -v #untested
+execute fc-cache - f -v
 
 spatialPrint "GUI programs"
 
@@ -67,10 +70,11 @@ echo "Refer README to complete simplescreenrecorder setup. Cannot be done from t
 execute sudo apt-get install texmaker -y # GUI LaTex client
 execute sudo apt-get install qbittorrent -y # The best torrent client
 
-# IMPORTANT: VLC is a snap utility. Uncomment if you wish to install.
+# IMPORTANT: VLC is a snap utility. Comment out if you do not wish to install.
 # Go to their site pages for deb package if you do not wish to use snap
 # Also check out vlsub and subsync if you install vlc
-# execute sudo snap install vlc -y
+execute sudo snap install vlc -y
+
 
 echo "Visit and install: "
 echo "Master PDF Editor: https://code-industry.net/free-pdf-editor/" # NOT open source

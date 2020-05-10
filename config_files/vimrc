@@ -25,6 +25,7 @@ noremap dO :diffoff!<CR>
 noremap dt :diffthis<CR>
 noremap <leader>s :set scrollbind!<CR>
 noremap <leader>n :set relativenumber!<CR>
+noremap <C-h> :%s///gc<Left><Left><Left><Left>
 
 colorscheme ron
 syntax on
