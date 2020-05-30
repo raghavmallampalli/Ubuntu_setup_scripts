@@ -13,9 +13,9 @@ IMPORTANT: Bash shell is replaced by a zsh+zim configuration.
 GUI programs I use frequently use. A number of repositories are added.
 ### Setting up SimpleScreenRecorder:
 * Add to startup applications:  simplescreenrecorder --start-hidden
-* [Page 1 of setup] (https://github.com/raghavmallampalli/Ubuntu_setup_scripts/blob/master/config_files/ssr_1.png?raw=true "Screenshot 1")
-* [Page 2 of setup] (https://github.com/raghavmallampalli/Ubuntu_setup_scripts/blob/master/config_files/ssr_2.png?raw=true "Screenshot 2")
-
+* Configure SSR as below
+ ![Page 1 of setup](config_files/ssr_1.png?raw=true "Screenshot 1")
+ ![Page 2 of setup](config_files/ssr_2.png?raw=true "Screenshot 2")
 
 ## command_line_utilities
 Installs CLI programs and scripts that I find useful.
@@ -24,8 +24,7 @@ Installs CLI programs and scripts that I find useful.
 Installs WINE, PlayOnLinux and attempts to correctly install MusicBee, a Windows music player. High failure rate.
 
 ## known bugs/failures/shortcomings:
-* pip3 installation of jupyter-lab occasionally fails (end of basic.sh)
-* more fonts to be added
+* pip3 installation of jupyter-lab occasionally fails (end of [basic.sh](basic.sh))
 
 ### Ubuntu 20.04
 * bat does not work

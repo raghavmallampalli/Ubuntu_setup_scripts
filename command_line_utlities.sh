@@ -32,11 +32,34 @@ fi
 
 execute sudo apt-get install pciutils -y
 
-execute sudo apt-get install ranger -y # CLI file explorer. zh, dD, <SPC>, rest vim keybindings
-# ranger configuration:
+# directory navigation tool - https://github.com/clvv/fasd untested
+execute sudo apt-get install fasd -y
+echo 'eval "$(fasd --init auto)"' >> ~/.zshrc
+echo 'eval "$(fasd --init auto)"' >> ~/.zshrc
+echo "zmodule wookayin/fzf-fasd" >> ~/.zimrc
+echo "Run zimfw install, clean and compile on completion"
+
+# ranger, CLI file explorer - https://github.com/ranger/ranger
+execute sudo apt-get install bsdtar atool tar unrar unzip -y
+execute sudo apt-get install ranger -y
+# ranger configuration: untested
+execute ranger --copy-config=all
+rm ~/.config/ranger/rc.conf ~/.config/ranger/commands.py ~/.config/ranger/rifle.conf
+cp ./config_files/rc.conf ~/.config/ranger/
+cp ./config_files/commands.py ~/.config/ranger/
+cp ./config_files/rifle.conf ~/.config/ranger/
+cp ./config_files/plugin_fasd_log.py ~/.config/ranger/plugins/
+git clone https://github.com/alexanderjeurissen/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
+cd ~/.config/ranger/plugins/ranger_devicons
+execute sudo make install
+cd -
+
 echo "Download and install Windscribe with binaries. https://windscribe.com/guides/linux#how-to Will be added to sh file when out of beta."
 
-# fuzzy finder and superior grep finders. https://github.com/junegunn/fzf 
+# fuzzy finder and superior grep finders.
+# https://github.com/junegunn/fzf
+# https://github.com/BurntSushi/ripgrep
+# https://github.com/ggreer/the_silver_searcher
 # fzf<CR>, C-t, C-r, Alt-C
 # fzf git installation. apt package available 19.10+
 if [ -x "$(command -v fzf)"]; then
@@ -70,10 +93,17 @@ if [ -x "$(command -v fzf)"]; then
     echo 'export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"' >> ~/.bashrc
 fi
 
-# terminal command auto-correction.
+# cheat sheet - http://cheat.sh
+mkdir -p ~/bin/ && curl https://cht.sh/:cht.sh > ~/bin/cht.sh && chmod +x ~/bin/cht.sh
+# there may be lag on first two runs after boot. Should improve on consecutive runs.
+
+# terminal command auto-correction - https://github.com/nvbn/thefuck
 execute sudo pip3 install thefuck
-echo 'eval $(thefuck --alias f)' >> ~/.zshrc
-echo 'eval $(thefuck --alias f)' >> ~/.bashrc
+echo 'eval $(thefuck --alias fu)' >> ~/.zshrc
+echo 'eval $(thefuck --alias fu)' >> ~/.bashrc
+
+# command line help - https://github.com/gleitz/howdoi 
+execute pip3 install howdoi
 
 # ffmpeg
 execute sudo apt-get install libhdf5-dev exiftool ffmpeg -y

@@ -15,21 +15,34 @@ call plug#begin('~/.vim/plugged')
 	Plug 'junegunn/fzf.vim'
 	Plug 'francoiscabrol/ranger.vim'
 	Plug 'junegunn/vim-peekaboo'
+	Plug 'tpope/vim-fugitive'
+	Plug 'tpope/vim-rhubarb'
+	Plug 'tpope/vim-surround'
+	Plug 'tpope/vim-eunuch'
+	Plug 'tpope/vim-surround'
 call plug#end()
 
 " Miscellaneous useful maps
 let mapleader = "," " yank to system register uses leader
 " vimdiff maps. also check do and dp
-noremap dO :diffoff!<CR> 
-" turns off diff for all active buffers
+noremap <silent> dT :diffthis<CR><C-w>w:diffthis<CR><C-w>w
 noremap dt :diffthis<CR>
+noremap dO :diffoff!<CR> 
+noremap <silent> dU :diffupdate<CR>
+" turns off diff for all active buffers
 noremap <leader>s :set scrollbind!<CR>
 noremap <leader>n :set relativenumber!<CR>
 noremap <C-h> :%s///gc<Left><Left><Left><Left>
-
+" Escape insert mode by typing jj or kk quickly
+inoremap jj <Esc>
+inoremap kk <Esc>
 colorscheme ron
 syntax on
 set mouse=a
+
+if &diff                             " only for diff mode/vimdiff
+  set diffopt=filler,context:1000000 " filler is default and inserts empty lines for sync
+endif
 
 "This is for wraping left and right so that cursor left at the beginning of the line goes to end of the previous line
 set whichwrap+=<,>,h,l,[,] 
@@ -47,15 +60,15 @@ imap <silent> <End> <C-o>g<End>
 setlocal linebreak
 setlocal nolist
 setlocal display+=lastline
+set statusline+=%F
 
-" Shows line number to the left. set nonu to turn off.
+" Shows line number to the left. try set nornu and set nonu to turn off.
 set number
 highlight LineNr ctermfg=grey
 
-" copy to system register (primary/clipboard)
-noremap <leader>Y "*y
-noremap <leader>P "*p
+" copy/cut/paste to/to/from system register (clipboard)
 noremap <leader>y "+y
+noremap <leader>d "+d
 noremap <leader>p "+p
 
 " ranger vim integration
@@ -66,17 +79,37 @@ let g:ranger_command_override = 'ranger --cmd "set show_hidden=true"'
 " Work with lightline
 set laststatus=2
 set noshowmode
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'FugitiveHead',
+      \ },
+      \ }
 
 " Work with fzf.vim 
 map <leader>f :Files<CR> " Check ^x, ^v while in fzf
+map <leader>F :Files<Space> 
 let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit',
   \ 'ctrl-y': {lines -> setreg('*', join(lines, "\n"))}}
+" Mapping selecting mappings
+nmap <leader><tab> <plug>(fzf-maps-n)
+xmap <leader><tab> <plug>(fzf-maps-x)
+omap <leader><tab> <plug>(fzf-maps-o)
+" Insert mode completion
+imap <c-x><c-d> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+imap <c-x><c-l> <plug>(fzf-complete-line)
+inoremap <expr> <c-x><c-f> fzf#vim#complete#path('rg --files')
 " https://github.com/junegunn/fzf.vim for more detailed list
 
-" Tab shortcuts: avoid using tabs unless you have mouse mode on. Pain in the ass.
+" Tab shortcuts: avoid using tabs unless you use vim as IDE or have mouse mode on. Pain in the ass.
 noremap <leader>t<Right> :tabn<CR>
 noremap <leader>tl :tabn<CR>
 noremap <leader>t<Left> :tabp<CR>

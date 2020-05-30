@@ -2,36 +2,44 @@ alias maxvol="pactl set-sink-volume @DEFAULT_SINK@ 150%"
 alias update="sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y"
 alias download="wget --random-wait -r -p --no-parent -e robots=off -U mozilla"
 alias server="ifconfig | grep inet && python3 -m http.server"
-
-alias ls='ls -l --color'
+alias ls='ls --color'
 alias la='ls -la --color'
 alias gettime='sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d" " -f5-8)Z";'
 alias list-repos="apt-cache policy |grep http |awk '{print $2 $3}' |sort -u"
 alias xo="xdg-open"
 alias vim="vim -O" # open multiple files as vertical splits
-alias python='python3' # simple scam
+alias python='python3' # doesn't affect other installation sources, only direct CLI references 
 alias pip='pip3'
+alias untar='tar -xvzf'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
 
 alias gpom="git push origin master"
+alias ggr="git log --all --decorate --oneline --graph"
 alias jn="jupyter notebook"
 alias jl="jupyter lab"
 alias aria="aria2c --file-allocation=none -c -x 10 -s 10"
 alias ydl="youtube-dl -f 140 --add-metadata --metadata-from-title \"%(artist)s - %(title)s\" -o \"%(title)s.%(ext)s\""
-alias cat="bat -p"
-
-alias ggr="git log --all --decorate --oneline --graph"
-alias rn="ranger"
+alias rn=". ranger"
 alias onedrives='onedrive --synchronize'
 alias startup='onedrive --synchronize; update'
 alias calibreupdate='sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin' # url as of 12th April 2020
 alias fzfupdate='cd ~/.fzf && git pull && ./install && cd -'
 alias bashtop='~/.bashtop/bashtop'
+alias fzf='fzf-tmux -r'
 
+# tmux aliases
 alias tgex="tmux -u new-session -s General \; \
+		split-window -v \; \
+		send-keys '. ranger' C-m \; \
+		swap-pane -U\; \
+		resize-pane -U 4\; \
+		selectp -D \; \
+		rename-window 'general' \; \
             neww \; \
               send-keys 'htop' C-m \; \
               split-window -h \; \
-              send-keys 'df' C-m \; \
+              send-keys 'watch df' C-m \; \
               split-window -v \; \
               send-keys 'watch sensors' C-m \; \
               rename-window 'performance' \; \
@@ -45,7 +53,6 @@ alias trox="tmux -u new-session -s ROS\; \
               send-keys 'watch sensors' C-m \; \
               rename-window 'performance' \; \
             select-window -l" #ROS
-
 alias tsetux="tmux -u new-session -s 'Setup'\; \
 	      	send-keys 'vimdiff ~/.vimrc ~/Documents/Ubuntu_setup_scripts/config_files/vimrc' C-m  \; \
 		rename-window 'vimrc' \; \
@@ -55,5 +62,25 @@ alias tsetux="tmux -u new-session -s 'Setup'\; \
 	      neww \; \
 	      	send-keys 'vimdiff ~/.tmux.conf.local ~/Documents/Ubuntu_setup_scripts/config_files/tmux.conf.local' C-m \; \
 		rename-window 'tmux conf' \; \
+	      neww \; \
+	      	send-keys 'vimdiff ~/.config/ranger/rc.conf ~/Documents/Ubuntu_setup_scripts/config_files/rc.conf' C-m \; \
+		rename-window 'rc' \; \
+	      neww \; \
+	      	send-keys 'vimdiff ~/.config/ranger/rifle.conf ~/Documents/Ubuntu_setup_scripts/config_files/rifle.conf' C-m \; \
+		rename-window 'rifle' \; \
+	      neww \; \
+	      	send-keys 'vimdiff ~/.config/ranger/commands.py ~/Documents/Ubuntu_setup_scripts/config_files/commands.py' C-m \; \
+		rename-window 'rn commands' \; \
 	      select-window -l"  # edit setup scripts.
-# Edit paths of setup scripts here.
+
+# Working with fasd
+#alias f='fasd -f'       # file, should be aliased already
+alias a='fasd -a'        # any
+alias s='fasd -si'       # show / search / select
+alias d='fasd -d'        # directory
+alias sd='fasd -sid'     # interactive directory selection
+alias sf='fasd -sif'     # interactive file selection
+alias z='fasd_cd -d'     # cd, same functionality as j in autojump
+alias zz='fasd_cd -d -i' # cd with interactive selection
+alias v='f -e vim' # quick opening files with vim
+alias o='a -e xdg-open' # quick opening files with xdg-open

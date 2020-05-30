@@ -103,9 +103,10 @@ ln -s -f /opt/.zsh/bash_aliases ~/.bash_aliases
     echo "export EDITOR=/usr/bin/vim"
 
     echo "setopt nonomatch # allows name* matching in apt, ls etc. use with caution"
+    echo "[[ -a "/etc/zsh_command_not_found" ]] && . /etc/zsh_command_not_found"
     echo "setopt SHARE_HISTORY"
 } >> ~/.zshrc
-echo "Edit .zshrc and change 'bindkey -e' to 'bindkey -v'"
+echo "For vim bindings edit .zshrc and change 'bindkey -e' to 'bindkey -v'. Open .profile and copy the PATH changing commands to .zshrc"
 
 # tmux set up.
 execute sudo apt-get install tmux -y
@@ -172,4 +173,11 @@ execute $PIP scikit-learn scikit-image # basic ML libraries
 # execute $PIP keras tensorflow # ML libraries. Occupy large amounts of space.
 # Also consider sage if you have no access to Mathematica. https://doc.sagemath.org/html/en/installation/binary.html 
 echo "Remove backup files after copying required data into new files"
+
+echo "GitHub and GitLab SSH Key addition: Follow instructions in https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
+echo "https://github.com/settings/keys for GitHub"
+echo "https://gitlab.com/profile/keys for GitLab"
+echo "Do not enter a passphrase for your GitHub ssh key."
+echo "Check the .bash_aliases and .zshrc files and remove any aliases/sources you do not need."
 echo "Installation completed. Restart and install other scripts. Read them first. They are not yet fully tested."
+

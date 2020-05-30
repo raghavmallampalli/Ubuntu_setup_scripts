@@ -12,7 +12,7 @@
 #   - and iTerm2 is configured to send [1;9A -> [1;9D for option + arrow keys
 # then uncomment the following line to make Meta + arrow keys mapping work
 #set -ga terminal-overrides "*:kUP3=\e[1;9A,*:kDN3=\e[1;9B,*:kRIT3=\e[1;9C,*:kLFT3=\e[1;9D"
-set -g mouse on
+#set -g mouse on
 
 # -- windows & pane creation ---------------------------------------------------
 
@@ -278,7 +278,7 @@ tmux_conf_copy_to_os_clipboard=true
 #set -g history-limit 10000
 
 # start with mouse mode enabled
-#set -g mouse on
+set -g mouse on
 
 # force Vi mode
 #   really you should export VISUAL or EDITOR environment variable, see manual
@@ -292,8 +292,17 @@ tmux_conf_copy_to_os_clipboard=true
 # set -g prefix C-a
 # bind C-a send-prefix
 
-# move status line to top
+# move status line to bottom
 set -g status-position bottom 
 bind | split-window -h
 bind - split-window -v
-bind k kill-session
+bind -n C-k kill-session
+
+# switch panes using Alt-arrow without prefix
+bind -n M-Left select-pane -L
+bind -n M-Right select-pane -R
+bind -n M-Up select-pane -U
+bind -n M-Down select-pane -D
+
+# don't rename windows automatically
+set-option -g allow-rename off
