@@ -21,7 +21,7 @@ execute () {
     fi
 }
 
-echo "Proceed if you have run basic.sh, cd'ed to the partent folder of this script and gone through this sh file. Also make sure you know how to delete added repositories. Ctrl+C and do so first if not. [ENTER] to continue."
+echo "Proceed if you have run basic.sh, changed directory to the parent folder of this script and gone through this sh file. Also make sure you know how to delete added repositories. Ctrl+C and do so first if not. [ENTER] to continue."
 read dump
 
 curl -sS https://download.spotify.com/debian/pubkey.gpg | sudo apt-key add - # check if the file remains post installation

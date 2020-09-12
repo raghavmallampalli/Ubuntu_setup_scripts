@@ -14,7 +14,7 @@ execute () {
     fi
 }
 
-echo "Proceed if you have run all the other sh files, cd'ed to the parent folder of this script and gone through it. Ctrl+C and do so first if not. [ENTER] to continue."
+echo "Proceed if you have run all the other sh files, changed directory to the parent folder of this script and gone through it. Ctrl+C and do so first if not. [ENTER] to continue."
 read dump
 
 # Anything involving wine involves a high failure rate. This may not (almost definitely will not) work out of the box.

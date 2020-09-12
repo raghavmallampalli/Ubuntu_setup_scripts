@@ -10,10 +10,11 @@ endif
 " ranger.vim: ranger plugin for vim
 " vim-peekaboo: Pop up menu with registers
 call plug#begin('~/.vim/plugged')
+	Plug 'easymotion/vim-easymotion'
+	Plug 'francoiscabrol/ranger.vim'
 	Plug 'itchyny/lightline.vim'
 	Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 	Plug 'junegunn/fzf.vim'
-	Plug 'francoiscabrol/ranger.vim'
 	Plug 'junegunn/vim-peekaboo'
 	Plug 'tpope/vim-fugitive'
 	Plug 'tpope/vim-rhubarb'
@@ -32,21 +33,10 @@ noremap <silent> dU :diffupdate<CR>
 " turns off diff for all active buffers
 noremap <leader>s :set scrollbind!<CR>
 noremap <leader>n :set relativenumber!<CR>
-noremap <C-h> :%s///gc<Left><Left><Left><Left>
+noremap <C-h> :%s,,,gc<Left><Left><Left><Left>
 " Escape insert mode by typing jj or kk quickly
 inoremap jj <Esc>
 inoremap kk <Esc>
-colorscheme ron
-syntax on
-set mouse=a
-
-if &diff                             " only for diff mode/vimdiff
-  set diffopt=filler,context:1000000 " filler is default and inserts empty lines for sync
-endif
-
-"This is for wraping left and right so that cursor left at the beginning of the line goes to end of the previous line
-set whichwrap+=<,>,h,l,[,] 
-
 "The following piece of code for moving through wrapped lines refer:[http://vim.wikia.com/wiki/Move_through_wrapped_lines]
 map <silent> <Up> gk
 imap <silent> <Up> <C-o>gk
@@ -56,6 +46,21 @@ map <silent> <home> g<home>
 imap <silent> <home> <C-o>g<home>
 map <silent> <End> g<End>
 imap <silent> <End> <C-o>g<End>
+" copy/cut/paste to/to/from system register (clipboard)
+noremap <leader>y "+y
+noremap <leader>d "+d
+noremap <leader>p "+p
+
+"This is for wraping left and right so that cursor left at the beginning of the line goes to end of the previous line
+set whichwrap+=<,>,h,l,[,] 
+
+colorscheme ron
+syntax on
+set mouse=a
+
+if &diff                             " only for diff mode/vimdiff
+  set diffopt=filler,context:1000000 " filler is default and inserts empty lines for sync
+endif
  
 setlocal linebreak
 setlocal nolist
@@ -65,11 +70,6 @@ set statusline+=%F
 " Shows line number to the left. try set nornu and set nonu to turn off.
 set number
 highlight LineNr ctermfg=grey
-
-" copy/cut/paste to/to/from system register (clipboard)
-noremap <leader>y "+y
-noremap <leader>d "+d
-noremap <leader>p "+p
 
 " ranger vim integration
 let g:ranger_map_keys = 0

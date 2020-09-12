@@ -14,7 +14,7 @@ execute () {
     fi
 }
 
-echo "Proceed if you have run basic.sh, cd'ed to the partent folder of this script and gone through it. Ctrl+C and do so first if not. [ENTER] to continue."
+echo "Proceed if you have run basic.sh, changed directory to the partent folder of this script and gone through it. Ctrl+C and do so first if not. [ENTER] to continue."
 read dump
 
 
@@ -32,7 +32,7 @@ fi
 
 execute sudo apt-get install pciutils -y
 
-# directory navigation tool - https://github.com/clvv/fasd untested
+# directory navigation tool - https://github.com/clvv/fasd
 execute sudo apt-get install fasd -y
 echo 'eval "$(fasd --init auto)"' >> ~/.zshrc
 echo 'eval "$(fasd --init auto)"' >> ~/.zshrc
@@ -41,18 +41,16 @@ echo "Run zimfw install, clean and compile on completion"
 
 # ranger, CLI file explorer - https://github.com/ranger/ranger
 execute sudo apt-get install bsdtar atool tar unrar unzip -y
-execute sudo apt-get install ranger -y
+execute pip3 install ranger-fm -y
 # ranger configuration: untested
 execute ranger --copy-config=all
 rm ~/.config/ranger/rc.conf ~/.config/ranger/commands.py ~/.config/ranger/rifle.conf
 cp ./config_files/rc.conf ~/.config/ranger/
 cp ./config_files/commands.py ~/.config/ranger/
 cp ./config_files/rifle.conf ~/.config/ranger/
+mkdir ~/.config/ranger/plugins/
 cp ./config_files/plugin_fasd_log.py ~/.config/ranger/plugins/
 git clone https://github.com/alexanderjeurissen/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
-cd ~/.config/ranger/plugins/ranger_devicons
-execute sudo make install
-cd -
 
 echo "Download and install Windscribe with binaries. https://windscribe.com/guides/linux#how-to Will be added to sh file when out of beta."
 
@@ -103,7 +101,7 @@ echo 'eval $(thefuck --alias fu)' >> ~/.zshrc
 echo 'eval $(thefuck --alias fu)' >> ~/.bashrc
 
 # command line help - https://github.com/gleitz/howdoi 
-execute pip3 install howdoi
+execute sudo pip3 install howdoi
 
 # ffmpeg
 execute sudo apt-get install libhdf5-dev exiftool ffmpeg -y

@@ -91,6 +91,7 @@ cp ./config_files/bash_aliases /opt/.zsh/bash_aliases
 ln -s -f /opt/.zsh/bash_aliases ~/.bash_aliases
 
 {
+    echo "full_scripts_path=$PWD"
     echo "if [ -f ~/.bash_aliases ]; then"
     echo "  source ~/.bash_aliases"
     echo "fi"
@@ -98,13 +99,66 @@ ln -s -f /opt/.zsh/bash_aliases ~/.bash_aliases
     echo "# Switching to 256-bit colour by default so that zsh-autosuggestion's suggestions are not suggested in white, but in grey instead"
     echo "export TERM=xterm-256color"
 
-    echo "# Setting the default text editor to code"
+    echo "# Setting the default text editor to vim"
     echo "export VISUAL=/usr/bin/vim"
     echo "export EDITOR=/usr/bin/vim"
 
     echo "setopt nonomatch # allows name* matching in apt, ls etc. use with caution"
     echo "[[ -a "/etc/zsh_command_not_found" ]] && . /etc/zsh_command_not_found"
     echo "setopt SHARE_HISTORY"
+
+    echo "bindkey -v"
+    echo "bindkey 'jj' vi-cmd-mode"
+    echo "bindkey 'jk' vi-cmd-mode"
+    echo "bindkey 'kk' vi-cmd-mode"
+    echo "autoload edit-command-line; zle -N edit-command-line"
+    echo "bindkey -M vicmd V edit-command-line"
+    echo "# Check these lines if Ctrl+Arrow does not work on your terminal."
+    echo "# To find which key binding will work, execture cat >/dev/null"
+    echo "# and press the key combination you want."
+    echo "bindkey \"^[[1;5C\" forward-word"
+    echo "bindkey \"^[[1;5D\" backward-word"
+
+    echo "export USER_COLOR=183"
+    echo "export HOST_COLOR=222"
+    echo "export PWD_COLOR=120"
+    echo "export BRANCH_COLOR=159"
+    echo "export UNINDEXED_COLOR=229"
+    echo "export INDEXED_COLOR=120"
+    echo "export UNTRACKED_COLOR=210"
+    echo "export STASHED_IND=\$UNINDEXED_IND"
+    echo "export STASHED_COLOR=231"
+
+    echo "############################################"
+    echo "# Following section must be at the bottom of the zshrc file. Move it to the end before restarting."
+    echo "# adds an indicator for vi mode at terminal"
+    echo "PS1+='\${VIMODE}' "
+    echo "# 'I' for normal insert mode"
+    echo "# 'N' for command mode"
+    echo "function zle-line-init zle-keymap-select {"
+    echo "    GIANT_N='%B%F{green}N%f%b '"
+    echo "    GIANT_I='%BI%f%b '"
+    echo "    VIMODE=\"\${\${KEYMAP/vicmd/\$GIANT_N}/(main|viins)/\$GIANT_I}\""
+    echo "    zle reset-prompt"
+    echo "}"
+    echo "zle -N zle-line-init"
+    echo "zle -N zle-keymap-select"
+    echo "# automatically attaches 'General' if it exists and is not attached. Creates if it does not."
+    echo "# If you do not wish to attach tmux in some programs find what env variable is set in terminals run within that program"
+    echo "# and append that to first if block. eg. TERM_PROGRAM is set to vscode by VS Code"
+    echo "if [ -z \${TERM_PROGRAM} -a -z \${TMUX} ]; then"
+    echo "	tmux ls 2>/dev/null | grep 'General' >/dev/null"
+    echo "	if [ \$? -eq 0 ]; then"
+    echo "		tmux ls | grep 'General' | grep 'attached' >/dev/null"
+    echo "		if [ \$? -eq 1 ]; then"
+    echo "			tmux -u attach -t 'General'"
+    echo "		fi"
+    echo "	else"
+    echo "		tgex"
+    echo "	fi"
+    echo "fi"
+    echo "############################################"
+
 } >> ~/.zshrc
 echo "For vim bindings edit .zshrc and change 'bindkey -e' to 'bindkey -v'. Open .profile and copy the PATH changing commands to .zshrc"
 
@@ -134,9 +188,8 @@ if [ "$tempvar" = "v" ]; then
     sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
     execute sudo apt-get install apt-transport-https -y
     execute sudo apt-get update -y
-    execute sudo apt-get install code -y # or code-insiders
+    execute sudo apt-get install code-insiders -y # or code-insiders
     execute rm microsoft.gpg
-    execute code --install-extension Shan.code-settings-sync # extension that saves your installed extensions and settings to github
 elif [ "$tempvar" = "a" ]; then
     execute sudo add-apt-repository ppa:webupd8team/atom
     execute sudo apt-get update -y; execute sudo apt-get install atom -y

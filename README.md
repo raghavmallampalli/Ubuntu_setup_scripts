@@ -5,7 +5,7 @@ These scripts are largely inspired by https://github.com/rsnk96/Ubuntu-Setup-Scr
 For a list of useful commands and tips, check out [help](Help.md)
 
 ## basic
-Basic setup of Ubuntu. It installs some essential packages and their dependencies. Additionally it also installs a IDE of your choice (Sublime/Atom/VS Code). Finally it installs Python3, important libraries in Python3 and octave.
+Basic setup of Ubuntu. It installs some essential packages and their dependencies. Additionally it also installs a IDE of your choice (Sublime/Atom/VS Code). Finally it installs Python3, useful libraries in Python3 and octave.
 
 IMPORTANT: Bash shell is replaced by a zsh+zim configuration.
 
@@ -14,21 +14,20 @@ GUI programs I use frequently use. A number of repositories are added.
 ### Setting up SimpleScreenRecorder:
 * Add to startup applications:  simplescreenrecorder --start-hidden
 * Configure SSR as below
+
  ![Page 1 of setup](config_files/ssr_1.png?raw=true "Screenshot 1")
  ![Page 2 of setup](config_files/ssr_2.png?raw=true "Screenshot 2")
 
 ## command_line_utilities
-Installs CLI programs and scripts that I find useful.
+Installs CLI programs and scripts that I find useful. Clean the ~.bash_aliases file of unused aliases if you do not run this script.
 
 ## wine_playonlinux_musicbee
 Installs WINE, PlayOnLinux and attempts to correctly install MusicBee, a Windows music player. High failure rate.
 
-## known bugs/failures/shortcomings:
-* pip3 installation of jupyter-lab occasionally fails (end of [basic.sh](basic.sh))
-
+## Known bugs/failures/shortcomings:
 ### Ubuntu 20.04
-* bat does not work
+* bat installation does not work
 * ripgrep does not install
 * vivaldi package not out
 * inkspace not out
-* ros out on 23rd May 2020
+* ros noetic installation not configured

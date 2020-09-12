@@ -26,8 +26,8 @@ sudo apt --fix-broken install
 
 # useful man pages:
 man hier
-
 ```
+
 * Learning shell scripting: https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
 * Bash programs quick reference: https://github.com/Idnan/bash-guide 
 * Debugging in bash:
@@ -42,8 +42,14 @@ bash -x scriptname
 * Majority of syntax used in bash carries forward to zsh. No problems should be encountered.
 # Programs:
 ## Git
-
-
+Uploading existing repository to Github: Create repo on GH, copy the "Code" URL and use below lines:
+```
+git remote add origin remoteRepositoryURL
+# or
+git remote set-url origin remoteRepositoryURL
+# and
+git push -f origin master
+```
 ## VSCode
 * Ctrl+Shift+P: quick commands
 * Enter Help: Welcome quick commands menu for quick start
@@ -90,13 +96,13 @@ bash -x scriptname
 * [prefix]? opens list of keybindings
 
 ## fzf
-* ```fzf # CLI command```
+* `fzf # CLI command`
 *  C-t, C-r, C-y, Alt-C, 
 
 ## ranger
-* To launch ranger on Windows+E unset Launch Explorer, make new shortcut with command as ```gnome-terminal -x zsh -c "source /home/raghav/.zshrc; ranger"```
+* To launch ranger on Windows+E unset Launch Explorer, make new shortcut with command as `gnome-terminal -x zsh -c "source /home/raghav/.zshrc; ranger"`
 * Opens gnome-terminal, sources zshrc and runs ranger
-* ```rn``` to launch ranger
+* `rn` to launch ranger
 * cd works
 * zh - display hidden files
 * a - rename
@@ -141,6 +147,7 @@ bash -x scriptname
 - functions: save as .m file
 	- function %output = %name(%parameters) \n %stuff
 
+[MATLAB cheatsheet](./config_files/Matlab%20Style%20Guidelines%20Cheat%20Sheet.pdf)
 ## Sage/Mathematica
 Refer this [notebook](https://drive.google.com/file/d/1GnfluFulCelDpy1oAOBRNodlEc_HDM9Q/view?usp=sharing).
 
