@@ -65,9 +65,7 @@ if [ -x "$(command -v fzf)"]; then
     /bin/bash ~/.fzf/install
     
     # faster searcher than ack/grep. works well for fzf.
-    if [[ ! -n $CIINSTALL ]]; then
-        read -p "Silver searcher or ripgrep? Ag recommended for 18, Rg for 19+ [Silver/Rip/Quit: s/r/q]: " tempvar
-    fi
+    read -p "Silver searcher or ripgrep? Ag recommended for 18, Rg for 19+ [Silver/Rip/Quit: s/r/q]: " tempvar
     tempvar=${tempvar:-q}
     if [ "$tempvar" = "s" ]; then # Silver searcher installation
         execute sudo apt-get install silversearcher-ag -y

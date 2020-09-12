@@ -47,6 +47,8 @@ execute sudo apt-get install git wget curl xclip -y
 execute sudo apt-get install vim vim-gui-common -y # vim gnome adds system clipboard functionality
 execute sudo apt-get install htop -y
 execute sudo apt-get install run-one xbindkeys xbindkeys-config wmctrl xdotool -y
+execute sudo apt-get install ruby-full
+execute gem install bundler
 cp ./config_files/vimrc ~/.vimrc
 
 # zsh is a shell that's better than bash. zim is a framework/plugin management system for it.
@@ -114,7 +116,7 @@ ln -s -f /opt/.zsh/bash_aliases ~/.bash_aliases
     echo "autoload edit-command-line; zle -N edit-command-line"
     echo "bindkey -M vicmd V edit-command-line"
     echo "# Check these lines if Ctrl+Arrow does not work on your terminal."
-    echo "# To find which key binding will work, execture cat >/dev/null"
+    echo "# To find which key binding will work, execute cat >/dev/null"
     echo "# and press the key combination you want."
     echo "bindkey \"^[[1;5C\" forward-word"
     echo "bindkey \"^[[1;5D\" backward-word"
@@ -177,9 +179,8 @@ fi
 cp ./config_files/tmux.conf.local ~/.tmux.conf.local
 
 # Install code editor of your choice
-if [[ ! -n $CIINSTALL ]]; then
-    read -p "Download and Install VS Code / Atom / Sublime. Press q to skip this. Default: Skip Editor installation [v/a/s/q]: " tempvar
-fi
+
+read -p "Download and Install VS Code Insiders / Atom / Sublime. Press q to skip this. Default: Skip Editor installation [v/a/s/q]: " tempvar
 tempvar=${tempvar:-q}
 
 if [ "$tempvar" = "v" ]; then
@@ -188,7 +189,7 @@ if [ "$tempvar" = "v" ]; then
     sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
     execute sudo apt-get install apt-transport-https -y
     execute sudo apt-get update -y
-    execute sudo apt-get install code-insiders -y # or code-insiders
+    execute sudo apt-get install code-insiders -y # or code
     execute rm microsoft.gpg
 elif [ "$tempvar" = "a" ]; then
     execute sudo add-apt-repository ppa:webupd8team/atom
@@ -207,14 +208,14 @@ fi
 execute sudo apt-get install octave -y # comment out if you have access to MATLAB. 
 
 if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -lt 19 ]]; then  
-    execute sudo apt-get install python-pip -y # 20.04 does not have python2 pip in repo.
+    execute sudo apt-get install python-pip -y # 20.04 does not have python-pip in repo.
 fi
 
-if [[ $(command -v conda) || (-n $CIINSTALL) ]]; then
+if [[ $(command -v conda) ]]; then
     PIP="pip install"
 else
     execute sudo apt-get install python3-dev python3-tk python3-setuptools -y
-    if [[ ! -n $CIINSTALL ]]; then sudo apt-get install python3-pip; fi
+    then sudo apt-get install python3-pip; fi
     PIP="sudo pip3 install --upgrade" # add -H flag to sudo if this doesn't work
 fi
 
@@ -225,6 +226,12 @@ execute $PIP matplotlib numpy scipy pandas h5py # standard scientific libraries
 execute $PIP scikit-learn scikit-image # basic ML libraries
 # execute $PIP keras tensorflow # ML libraries. Occupy large amounts of space.
 # Also consider sage if you have no access to Mathematica. https://doc.sagemath.org/html/en/installation/binary.html 
+
+# JuliaLang installation
+wget https://julialang-s3.julialang.org/bin/linux/x64/1.5/julia-1.5.1-linux-x86_64.tar.gz -P ~/
+tar zxvf ~/julia-1.5.1-linux-x86_64.tar.gz -C ~/
+echo "export PATH=\"\$PATH:\$HOME/julia-1.5.1/bin\"" >> ~/.zshrc
+
 echo "Remove backup files after copying required data into new files"
 
 echo "GitHub and GitLab SSH Key addition: Follow instructions in https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"

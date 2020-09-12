@@ -46,10 +46,21 @@ map <silent> <home> g<home>
 imap <silent> <home> <C-o>g<home>
 map <silent> <End> g<End>
 imap <silent> <End> <C-o>g<End>
-" copy/cut/paste to/to/from system register (clipboard)
-noremap <leader>y "+y
-noremap <leader>d "+d
-noremap <leader>p "+p
+
+" Copy, cut and delete
+vnoremap x "_d
+noremap x "_d
+" copy/cut/paste to/from system register (clipboard) on Linux or Windows
+set clipboard^=unnamed,unnamedplus
+" copy/cut/paste to/from system register in WSL: uncomment following lines when on WSL
+"let s:clip = '/mnt/c/Windows/System32/clip.exe'
+"if executable(s:clip)
+"	augroup WSLYank
+"        	autocmd!
+"        	autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
+"        augroup END
+"endif
+" Use terminal shortcut for pasting from system clipboard in WSL
 
 "This is for wraping left and right so that cursor left at the beginning of the line goes to end of the previous line
 set whichwrap+=<,>,h,l,[,] 
@@ -115,3 +126,17 @@ noremap <leader>tl :tabn<CR>
 noremap <leader>t<Left> :tabp<CR>
 noremap <leader>th :tabp<CR>
 noremap <leader>tn :tabnew<CR>
+
+" Press ~ to change case of selection
+function! TwiddleCase(str)
+	if a:str ==# toupper(a:str)
+		let result = tolower(a:str)
+	elseif a:str ==# tolower(a:str)
+		let result = substitute(a:str,'\(\<\w\+\>\)', '\u\1', 'g')
+	else
+		let result = toupper(a:str)
+	endif
+	return result
+endfunction
+vnoremap <silent> ~ y:call setreg('', TwiddleCase(@"), getregtype(''))<CR>gv""Pgv
+

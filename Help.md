@@ -1,4 +1,9 @@
-# shell
+# General
+- Alt+F2: quick run a command
+- 
+
+# Programs and languages:
+# Shell
 ```
 COMMAND --help # pulls up help for the command
 man COMMAND # pulls up man page for command
@@ -40,7 +45,6 @@ bash -v scriptname
 bash -x scriptname
 ```
 * Majority of syntax used in bash carries forward to zsh. No problems should be encountered.
-# Programs:
 ## Git
 Uploading existing repository to Github: Create repo on GH, copy the "Code" URL and use below lines:
 ```
@@ -49,6 +53,8 @@ git remote add origin remoteRepositoryURL
 git remote set-url origin remoteRepositoryURL
 # and
 git push -f origin master
+# to start ignoring a file which was previously committed you need to remove it from cache first:
+git rm --cached FILENAME
 ```
 ## VSCode
 * Ctrl+Shift+P: quick commands
@@ -81,6 +87,9 @@ git push -f origin master
 	* ; - C-Shift-p
 	* gh - equivalent of mouse hover
 	* 
+
+## Julia
+Julia is a new programming language for scientific computing.
 
 ## tmux
 * Terminal multiplexer. Open multiple instances side by side
@@ -146,6 +155,21 @@ git push -f origin master
 	- while %condition, %stuff, %increment condition optional %, end;
 - functions: save as .m file
 	- function %output = %name(%parameters) \n %stuff
+- This code is useful in setting plot properties
+```
+function plotPropsSetter(currentAxis,xLim,yLim,xLabel,yLabel,plotTitle) %PLOTPROPSSETTER Set plot properties according to guide
+%currentAxis=gca
+%xlim = [lowerLimit upperLimit]
+% remaining parameters must be strings
+set(currentAxis,'FontName','Arial');
+set(currentAxis,'FontSize',24);
+xlim(xLim);
+ylim(yLim);
+title(plotTitle);
+xlabel(xLabel);
+ylabel(yLabel);
+end
+```
 
 [MATLAB cheatsheet](./config_files/Matlab%20Style%20Guidelines%20Cheat%20Sheet.pdf)
 ## Sage/Mathematica
