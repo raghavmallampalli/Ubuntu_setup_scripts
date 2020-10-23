@@ -93,13 +93,13 @@ alias tsetux="tmux -u new-session -s 'Setup'\; \
 	      	send-keys ' vimdiff ~/.bash_aliases $full_scripts_path/config_files/bash_aliases' C-m \; \
 		rename-window 'aliases' \; \
 	      neww \; \
-	      	send-keys ' vimdiff ~/.tmux.conf.local $full_scripts_path/config_files/tmux.conf.local' C-m \; \
+	      	send-keys ' vimdiff ~/.tmux.conf $full_scripts_path/config_files/tmux.conf' C-m \; \
 		rename-window 'tmux conf' \; \
 	      neww \; \
 	      	send-keys ' vimdiff ~/.config/ranger/rc.conf $full_scripts_path/config_files/rc.conf' C-m \; \
 		rename-window 'rc' \; \
 	      neww \; \
-	      	send-keys ' vimdiff ~/.config/ranger/rifle.conf $full_scripts_path/config_files/rifle.conf' C-m \; \
+	      	send-keys ' vimdiff ~/.config/ranger/scope.sh $full_scripts_path/config_files/scope.sh' C-m \; \
 		rename-window 'rifle' \; \
 	      neww \; \
 	      	send-keys ' vimdiff ~/.config/ranger/commands.py $full_scripts_path/config_files/commands.py' C-m \; \

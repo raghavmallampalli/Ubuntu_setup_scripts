@@ -70,7 +70,6 @@ if !exists('g:vscode') " Only execute if not in VS Code
 
 endif
 
-
 " Plugins common to VS code and terminal vim:
 
 " Navigate using keyboard. See :help easymotion

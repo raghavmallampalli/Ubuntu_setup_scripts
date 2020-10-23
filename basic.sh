@@ -87,22 +87,17 @@ cp ./config_files/.zshrc.local ~/.zshrc.localj
 echo "source ~/.zshrc.local"
 
 # tmux set up. TEST
-execute sudo apt-get install tmux -y
 if [ -f ~/.tmux.conf ]; then
     cp -L ~/.tmux.conf ~/backup_tmux.conf
     echo ".tmux.conf backed up to ~/backup_tmux.conf. Deleting."
-fi
-ln -s -f ~/.oh-my-tmux/.tmux.conf ~/.tmux.conf
-if [ -f ~/.oh-my-tmux.conf.local ]; then
-    cp -L ~/.tmux.conf.local ~/backup_tmux.conf.local
-    echo ".tmux.conf.local backed up to ~/backup_tmux.conf.local. Deleting."
 fi
 git clone https://github.com/tmux/tmux.git ~/tmux
 cd ~/tmux
 sh autogen.sh
 sh configure && make
 cd -
-echo "Restart shell and tmux will be available"
+cp ./config_files/tmux.conf ~/.tmux.conf
+echo "Press Ctrl+A I (capital I) on first run of tmux to install plugins."
 
 # Install code editor of your choice
 read -p "Download and Install VS Code Insiders / Atom / Sublime. Press q to skip this. Default: Skip Editor installation [v/a/s/q]: " tempvar
