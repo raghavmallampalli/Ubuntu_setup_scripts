@@ -1,5 +1,5 @@
 # Ubuntu_setup_scripts
-These are the scripts I use to set up my Ubuntu. Some portions are untested.
+These are the scripts I use to set up my Ubuntu. They install tools for Web development, robotics and scientific computing and work with Ubuntu 18.04, 20.04 and WSL2 Ubuntu. Some portions are untested.
 These scripts are largely inspired by https://github.com/rsnk96/Ubuntu-Setup-Scripts. Some of the code is taken directly from there. Check out if you have interest in AI/ML.
 
 For a list of useful commands and tips, check out [help](Help.md)
@@ -26,8 +26,11 @@ Installs WINE, PlayOnLinux and attempts to correctly install MusicBee, a Windows
 
 ## Known bugs/failures/shortcomings:
 ### Ubuntu 20.04
+#### CLI
 * bat installation does not work
 * ripgrep does not install
+#### gui
 * vivaldi package not out
 * inkspace not out
-* ros noetic installation not configured
+#### robotics
+* ROS noetic installation not configured

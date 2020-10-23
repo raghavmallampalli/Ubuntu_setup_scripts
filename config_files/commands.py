@@ -72,17 +72,15 @@ class fzf_select(Command): # Doesn't seem to work. Not mapped to anything.
     See: https://github.com/junegunn/fzf
     """
     def execute(self):
-        import subprocess
-        import os.path
         if self.quantifier:
             # match only directories
-            command="find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
-            -o -type d -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
+            command=r"find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
+                    -o -type d -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
         else:
             # match files and directories
-            command="find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
-            -o -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
-        fzf = self.fm.execute_command(command, universal_newlines=True, stdout=subprocess.PIPE)
+            command=r"find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
+                    -o -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
+        fzf = self.fm.execute_command(command, universal_newlines=True, stdout=PIPE)
         stdout, stderr = fzf.communicate()
         if fzf.returncode == 0:
             fzf_file = os.path.abspath(stdout.rstrip('\n'))
@@ -100,7 +98,7 @@ class fzfcdall(Command):
     Searches root and changes directory into selected result
     """
     def execute(self):
-        command="find -L / \( -path '/dev/*' -o -path '*/Android/Sdk/*' -o -path '*/.gradle/*' -o -path '*/.PlayOnLinux/*' -o -path '*/prefix32/*' -o -path '*/.wine/*' -o -path '*.wine-pipelight' -o -path '*.ivy2*' -o -path '*.texlive*' -o -path '*.git' -o -path '*.metadata' -o -path '*_notes' \) -prune -o -type d -print 2>/dev/null | fzf"
+        command=r"find -L / \( -path '/dev/*' -o -path '*/Android/Sdk/*' -o -path '*/.julia/*' -o -path '*/.ros/*' -o -path '*/.npm/*' -o -path '*/.vim/*' -o -path '*/.PlayOnLinux/*' -o -path '*/prefix32/*' -o -path '*/.wine/*' -o -path '*.wine-pipelight' -o -path '*.ivy2*' -o -path '*.texlive*' -o -path '*.git' -o -path '*.metadata' -o -path '*_notes' \) -prune -o -type d -print 2>/dev/null | fzf"
         fzf = self.fm.execute_command(command, stdout=PIPE)
         stdout, stderr = fzf.communicate()
         directory = stdout.decode('utf-8').rstrip('\n')
@@ -115,7 +113,7 @@ class fzfcd(Command):
     Searches current directory and changes directory into selected result
     """
     def execute(self):
-        command="find -L \( -path './Android/Sdk/*' -o -path './.gradle/*' -o -path './.PlayOnLinux/*' -o -path './prefix32/*' -o -path './.wine/*' -o -path '*.wine-pipelight' -o -path '*.ivy2*' -o -path '*.texlive*' -o -path '*.git' -o -path '*.metadata' -o -path '*_notes' \) -prune -o -type d -print 2>/dev/null | fzf"
+        command=r"find -L \( -path './Android/Sdk/*' -o -path './.gradle/*' -o -path './.PlayOnLinux/*' -o -path './prefix32/*' -o -path '*.ivy2*' -o -path '*.texlive*' -o -path '*.git' -o -path '*.metadata' -o -path '*_notes' \) -prune -o -type d -print 2>/dev/null | fzf"
         fzf = self.fm.execute_command(command, stdout=PIPE)
         stdout, stderr = fzf.communicate()
         directory = stdout.decode('utf-8').rstrip('\n')
@@ -148,3 +146,72 @@ class fasd(Command):
         dirs = output.strip().split("\n")
         dirs.sort(reverse=True)  # Listed in ascending frecency
         return dirs
+class mkcd(Command):
+    """
+    :mkcd <dirname>
+
+    Creates a directory with the name <dirname> and enters it.
+    """
+    def execute(self):
+        from os.path import join, expanduser, lexists
+        from os import makedirs
+        import re
+
+        dirname = join(self.fm.thisdir.path, expanduser(self.rest(1)))
+        if not lexists(dirname):
+            makedirs(dirname)
+            match = re.search('^/|^~[^/]*/', dirname)
+            if match:
+                self.fm.cd(match.group(0))
+                dirname = dirname[match.end(0):]
+
+            for m in re.finditer('[^/]+', dirname):
+                s = m.group(0)
+                if s == '..' or (s.startswith('.') and not self.fm.settings['show_hidden']):
+                    self.fm.cd(s)
+                else:
+                    ## We force ranger to load content before calling `scout`.
+                    self.fm.thisdir.load_content(schedule=False)
+                    self.fm.execute_console('scout -ae ^{}$'.format(s))
+        else:
+                        self.fm.notify("file/directory exists!", bad=True)
+import os
+import subprocess
+from ranger.api.commands import Command
+from ranger.container.file import File
+from ranger.ext.get_executables import get_executables
+
+
+class YankContent(Command):
+    """
+    Copy the content of image file and text file with xclip
+    """
+    def execute(self):
+        if 'xclip' not in get_executables():
+            self.fm.notify('xclip is not found.', bad=True)
+            return
+        arg = self.rest(1)
+        if arg:
+            if not os.path.isfile(arg):
+                self.fm.notify('{} is not a file.'.format(arg))
+                return
+            file = File(arg)
+        else:
+            file = self.fm.thisfile
+            if not file.is_file:
+                self.fm.notify('{} is not a file.'.format(file.relative_path))
+                return
+        relative_path = file.relative_path
+        cmd = ['xclip', '-selection', 'clipboard']
+        if not file.is_binary():
+            with open(file.path, 'rb') as fd:
+                subprocess.check_call(cmd, stdin=fd)
+        elif file.image:
+            cmd += ['-t', file.mimetype, file.path]
+            subprocess.check_call(cmd)
+            self.fm.notify('Content of {} is copied to x clipboard'.format(relative_path))
+        else:
+            self.fm.notify('{} is not an image file or a text file.'.format(relative_path))
+
+    def tab(self, tabnum):
+        return self._tab_directory_content()

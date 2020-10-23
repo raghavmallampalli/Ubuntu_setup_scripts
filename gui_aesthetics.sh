@@ -41,12 +41,20 @@ execute sudo apt-get install gnome-tweaks gnome-shell-extensions chrome-gnome-sh
 echo "GNOME extensions: install GNOME shell extensions browser extension. Alt+F2, r, enter to restart gnome-shell after installing extensions."
 echo "Check out Alternate-tab, Caffeine, CPU Power Manager, Steal My Focus and Dash to Dock"
 
+# Dracula theme everything
+execute sudo apt-get install dconf-cli -y
+git clone https://github.com/dracula/gnome-terminal
+cd gnome-terminal && sh ./install.sh && cd ..
+touch ~/.themes
+git clone https://github.com/dracula/gtk ~/.themes/Dracula
+gsettings set org.gnome.desktop.interface gtk-theme "Dracula"
+gsettings set org.gnome.desktop.wm.preferences theme "Dracula"
+
 execute sudo apt-get install libreoffice -y
 execute sudo cp ./config_files/images_numix.zip /usr/lib/libreoffice/share/config/ # change theme from libreoffice settings
 
 if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -lt 19 ]]; then
-    execute sudo apt-get install numix-gtk-theme papirus-icon-theme -y
-    gsettings set org.gnome.desktop.interface gtk-theme "Numix"
+    execute sudo apt-get install papirus-icon-theme -y
     gsettings set org.gnome.desktop.interface icon-theme "Papirus" # modify .desktop files if you don't like icons
 fi
 
@@ -61,6 +69,7 @@ execute sudo apt-get install speedcrunch -y # Superior calculator
 execute sudo apt-get install gimp inkspace -y # Photo editor, Vector image editor
 execute sudo apt-get install hexchat -y # IRC client
 execute sudo apt-get install spotify-client audacity -y
+execute sudo -H pip3 install youtube-dlg
 execute sudo apt-get install steam -y
 execute sudo apt-get install copyq -y # Clipboard logger. Super useful.
 echo "Change launch shortcut, add frequently typed stuff as pinned items. "
@@ -74,7 +83,6 @@ execute sudo apt-get install qbittorrent -y # The best torrent client
 # Go to their site pages for deb package if you do not wish to use snap
 # Also check out vlsub and subsync if you install vlc
 execute sudo snap install vlc -y
-
 
 echo "Visit and install: "
 echo "Master PDF Editor: https://code-industry.net/free-pdf-editor/" # NOT open source

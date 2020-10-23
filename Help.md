@@ -1,6 +1,6 @@
 # General
-- Alt+F2: quick run a command
-- 
+- Alt+F2: quick run a command in Ubuntu
+- `ytsd search_string` searches for the string on YouTube and downloads the video/audio of your preference. Check `./config_files/yt-search-dl.sh` to see how it works.
 
 # Programs and languages:
 # Shell
@@ -32,19 +32,43 @@ sudo apt --fix-broken install
 # useful man pages:
 man hier
 ```
-
 * Learning shell scripting: https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html
 * Bash programs quick reference: https://github.com/Idnan/bash-guide 
 * Debugging in bash:
-  * -n - do not run commands and check for syntax errors only
-  * -v - echo command before running them
-  * -x - echo commands after command-line processing
+    * -n - do not run commands and check for syntax errors only
+    * -v - echo command before running them
+    * -x - echo commands after command-line processing
 ```
 bash -n scriptname
 bash -v scriptname
 bash -x scriptname
 ```
-* Majority of syntax used in bash carries forward to zsh. No problems should be encountered.
+Majority of syntax used in bash carries forward to zsh. No problems should be encountered while switching.
+
+## vim
+* Programmable editor. Steep learning curve, worth it.
+* NOTE: C-S-A-p=Ctrl+Shift+Alt+p. Case matters in most CLI program shortcuts.
+* [Vim cheatsheet](https://camo.githubusercontent.com/7df123c8b1367c8cc47769f8f1f1d148df58a1ef/687474703a2f2f692e696d6775722e636f6d2f50515172642e706e67):![vim cheatsheet](config_files/vim_cheatsheet.png)
+* [Keyboard cheatsheet](https://camo.githubusercontent.com/bf50f0478b239e1ed99acd5248c247112b82f08f/687474703a2f2f692e696d6775722e636f6d2f68503637542e706e67)
+* [Searchable cheatsheet](https://devhints.io/vim)
+* See vimrc for syntax of keybindings and changing settings
+* zR and zM are particularly useful
+* Display custom keybindings - run :map
+* fzf.vim and ranger.vim bindings - see vimrc
+* read up on vim registers and marks
+* :%s/search/replace/gc - search and replace full file (g) with prompt for each match (c).
+    * In my .vimrc it is mapped to C-h in Normal mode
+* :h [keyword] - help for that keyword
+* :tabp, :tabn - are for Window navigation (avoid using windows)
+* C-w and arrow keys to navigate splits. C-w,w to go to opposite split.
+* C-g - file details
+* jj/kk - escape insert mode
+* [vim in VS Code:]( https://marketplace.visualstudio.com/items?itemName=vscodevim.vim )
+    * af - in visual mode
+    * ,m and ,b - bookmarks
+    * ; - C-S-p
+    * gh - equivalent of mouse hover
+
 ## Git
 Uploading existing repository to Github: Create repo on GH, copy the "Code" URL and use below lines:
 ```
@@ -56,37 +80,51 @@ git push -f origin master
 # to start ignoring a file which was previously committed you need to remove it from cache first:
 git rm --cached FILENAME
 ```
+## Docker
+Docker makes and attaches containers with all dependencies baked into them. The details of these containers can be saved into an image which can be transferred and used elsewhere.
+
+`docker run image` is used to create and start a container from an image, and then execute a command defined in the image. `docker run -it` attaches an interactive terminal. If you exit the container it can be started again using `docker start`. If you are detached from the container (-d flag) you can run `docker attach` to attach it.
+
+C-p C-q when entered at the attached container terminal detaches you from it. C-d stops the container.
+
+If you build a docker image it is saved along with the images and can be manipulated the same way as the other images.
+```bash
+# Not attached unless -i or -a are used.
+# -t Prints as tty
+# -d starts but does not attach
+docker run -dit imageName command
+# Stop a started container
+docker stop containerName
+# You can also stop detached containers this way
+# Start and attach stopped container
+docker start -a containerName
+
+# List all images on system
+docker images -a
+# List all containers on system
+docker ps -a
+# Output ports used by container
+docker port containerName
+
+# Delete stopped containers
+docker container prune
+# Delete unused/dangling images (~= autoremove)
+docker image prune
+# Remove specific image
+docker image rm imageName
+# Build image from Dockerfile andfiles in a specified directory or URL
+docker build dirPath
+# Push onto a repository in DockerHub
+docker push userName/imageName
+# make sure you have run "docker login" first
+```
+Many of these commands have been aliased. Check bash_aliases file. Refer [here](https://docker-curriculum.com) for a more thorough tutorial on Docker.
 ## VSCode
-* Ctrl+Shift+P: quick commands
+* C-S-p: quick commands
 * Enter Help: Welcome quick commands menu for quick start
   * Check out the Interactive playground in said Welcome page. Keyboard cheatsheet also is useful.
 * Any option can be accessed from quick commands menu
 * Regularly sync settings
-
-## vim
-* Programmable editor. Steep learning curve, worth it.
-* NOTE: C-p=Ctrl+p. Case matters in most CLI program shortcuts.
-* [Vim cheatsheet](https://camo.githubusercontent.com/7df123c8b1367c8cc47769f8f1f1d148df58a1ef/687474703a2f2f692e696d6775722e636f6d2f50515172642e706e67):![vim cheatsheet](config_files/vim_cheatsheet.png)
-* [Keyboard cheatsheet](https://camo.githubusercontent.com/bf50f0478b239e1ed99acd5248c247112b82f08f/687474703a2f2f692e696d6775722e636f6d2f68503637542e706e67)
-* [Searchable cheatsheet](https://devhints.io/vim)
-* See vimrc for syntax of keybindings and changing settings
-* zR and zM are particularly useful
-* Display custom keybindings - run :map
-* fzf.vim and ranger.vim bindings - see vimrc
-* read up on vim registers and marks
-* :%s/search/replace/gc - search and replace full file (g) with prompt for each match (c).
-	* In my .vimrc it is mapped to C-h in Normal mode
-* :h [keyword] - help for that keyword
-* :tabp, :tabn - are for Window navigation (avoid using windows)
-* C-w and arrow keys to navigate splits. C-w,w to go to opposite split.
-* C-g - file details
-* jj/kk - escape insert mode
-* [vim in VS Code:]( https://marketplace.visualstudio.com/items?itemName=vscodevim.vim )
-	* af - in visual mode
-	* ,m and ,b - bookmarks
-	* ; - C-Shift-p
-	* gh - equivalent of mouse hover
-	* 
 
 ## Julia
 Julia is a new programming language for scientific computing.
@@ -138,25 +176,25 @@ Julia is a new programming language for scientific computing.
 - max
 - 2^4
 - graphing:
-	- figure
-	- plot
-	- subplot
-	- clf
-	- colorbar
-	- colormap
-	- contour
-	- imagesc
+    - figure
+    - plot
+    - subplot
+    - clf
+    - colorbar
+    - colormap
+    - contour
+    - imagesc
 - magic
 - if statement
-	- if %condition, %stuff, elseif %condition, %stuff, else, %stuff
+    - if %condition, %stuff, elseif %condition, %stuff, else, %stuff
 - for loops:
-	- for i=m:n, %stuff, end;
+    - for i=m:n, %stuff, end;
 - while loops:
-	- while %condition, %stuff, %increment condition optional %, end;
+    - while %condition, %stuff, %increment condition optional %, end;
 - functions: save as .m file
-	- function %output = %name(%parameters) \n %stuff
+    - function %output = %name(%parameters) \n %stuff
 - This code is useful in setting plot properties
-```
+```MATLAB
 function plotPropsSetter(currentAxis,xLim,yLim,xLabel,yLabel,plotTitle) %PLOTPROPSSETTER Set plot properties according to guide
 %currentAxis=gca
 %xlim = [lowerLimit upperLimit]
@@ -173,10 +211,3 @@ end
 
 [MATLAB cheatsheet](./config_files/Matlab%20Style%20Guidelines%20Cheat%20Sheet.pdf)
 ## Sage/Mathematica
-Refer this [notebook](https://drive.google.com/file/d/1GnfluFulCelDpy1oAOBRNodlEc_HDM9Q/view?usp=sharing).
-
-NOTE: Runs only if sage is installed. Do not try to run in any other program. Open for viewing with Jupyter or Colab.
-
-## Shortcuts to some GUI programs
-
-https://www.evernote.com/shard/s577/sh/42d514a7-1110-495f-8604-b632d8177034/3168232ebd14791f784b916fca364b32 

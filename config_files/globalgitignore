@@ -5,10 +5,20 @@
 *.vscode
 node_modules
 .wine/
+.history/
+.ipynb_checkpoints/
 prefix32/
 .PlayOnLinux/
 .cache/
 .gvfs/
+julia*
+.julia/
+.jupyter/
+.npm/
+.plotly/
+.ros/
+.ssh/
+
 ###################
 # Temporary files
 *.kate-swp

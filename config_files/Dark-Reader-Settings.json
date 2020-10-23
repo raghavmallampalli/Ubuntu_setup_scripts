@@ -1,6 +1,6 @@
 {
     "applyToListedOnly": false,
-    "automation": "time",
+    "automation": "system",
     "changeBrowserTheme": false,
     "customThemes": [
         {
@@ -26,9 +26,33 @@
             "url": [
                 "calendar.google.com"
             ]
+        },
+        {
+            "theme": {
+                "mode": 1,
+                "brightness": 120,
+                "contrast": 80,
+                "grayscale": 0,
+                "sepia": 21,
+                "useFont": false,
+                "fontFamily": "Open Sans",
+                "textStroke": 0,
+                "engine": "dynamicTheme",
+                "stylesheet": "",
+                "darkSchemeBackgroundColor": "#181a1b",
+                "darkSchemeTextColor": "#e8e6e3",
+                "lightSchemeBackgroundColor": "#dcdad7",
+                "lightSchemeTextColor": "#181a1b",
+                "scrollbarColor": "#181a1b",
+                "selectionColor": "auto",
+                "styleSystemControls": true
+            },
+            "url": [
+                "drive.google.com"
+            ]
         }
     ],
-    "enableForPDF": true,
+    "enableForPDF": false,
     "enableForProtectedPages": false,
     "enabled": true,
     "location": {
@@ -54,7 +78,28 @@
         "www.reddit.com",
         "127.0.0.1:8001",
         "overleaf.com/project/",
-        "www.wikiwand.com"
+        "www.wikiwand.com",
+        "www.evernote.com",
+        "meet.google.com",
+        "plotly.com",
+        "localhost:8888",
+        "127.0.0.1:8000",
+        "keep.google.com",
+        "google.com/maps",
+        "twitter.com",
+        "colab.research.google.com",
+        "anilist.co",
+        "vim.fandom.com",
+        "127.0.0.1:8888",
+        "localhost:8000",
+        "www.aleksandrhovhannisyan.com",
+        "calendar.google.com",
+        "drjayanthi.mallampalli.in",
+        "raghav.mallampalli.in",
+        "analytics.google.com",
+        "localhost:8421",
+        "127.0.0.1:4001",
+        "localhost:4000"
     ],
     "siteListEnabled": [],
     "syncSettings": true,

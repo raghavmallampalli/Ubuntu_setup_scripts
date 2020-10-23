@@ -1,0 +1,107 @@
+{
+	"name": "Vimium C",
+	"@time": "10/23/2020, 5:37:32 PM",
+	"time": 1603454852847,
+	"environment": {
+		"extension": "1.86.2",
+		"platform": "win",
+		"chrome": 86
+	},
+	"autoDarkMode": false,
+	"exclusionRules": [
+		{
+			"pattern": ":https://mail.google.com/",
+			"passKeys": ""
+		},
+		{
+			"pattern": ":https://web.whatsapp.com/",
+			"passKeys": ""
+		},
+		{
+			"pattern": ":https://docs.google.com/",
+			"passKeys": ""
+		},
+		{
+			"pattern": ":https://www.youtube.com/",
+			"passKeys": "<space> [ ] i "
+		},
+		{
+			"pattern": ":https://youtube.googleapis.com/",
+			"passKeys": "[ ] i "
+		},
+		{
+			"pattern": "^https?://localhost:8888/",
+			"passKeys": ""
+		},
+		{
+			"pattern": ":https://colab.research.google.com/",
+			"passKeys": ""
+		},
+		{
+			"pattern": "^https?://192\\.168\\.1\\.10:8080/",
+			"passKeys": ""
+		},
+		{
+			"pattern": ":https://youtube.googleapis.com/",
+			"passKeys": ""
+		},
+		{
+			"pattern": ":https://github.com/",
+			"passKeys": "/ "
+		},
+		{
+			"pattern": "^https?://mallampalli\\.in:2082/",
+			"passKeys": "/ "
+		},
+		{
+			"pattern": "^https?://localhost",
+			"passKeys": ""
+		},
+		{
+			"pattern": "^https?://127\\.0\\.0\\.1",
+			"passKeys": ""
+		},
+		{
+			"pattern": ":https://www.openvim.com/",
+			"passKeys": ""
+		}
+	],
+	"ignoreCapsLock": 2,
+	"keyMappings": [
+		"# Insert your preferred key mappings here.",
+		"",
+		"unmap f",
+		"unmap F",
+		"unmap yf",
+		"unmap o",
+		"",
+		"map a enterInsertMode",
+		"map A enterInsertMode",
+		"map I enterInsertMode",
+		"map s LinkHints.activateMode",
+		"map S LinkHints.activateModeToOpenInNewForegroundTab",
+		"map ys LinkHints.activateModeToCopyLinkUrl",
+		"map o Vomnibar.activateInNewTab",
+		"map <c-f> enterFindMode",
+		""
+	],
+	"linkHintCharacters": "qwertasdfgzxcvb",
+	"userDefinedCss": [
+		"/* #omni */",
+		".dracula #bar{background:#44475a;}",
+		".dracula #input{background:#282a36; color:#f8f8f2;}",
+		".dracula #list{background:#282a36;}",
+		".dracula #list a{color:#6272a4;}",
+		".dracula .title{color:#f8f8f2;}",
+		"/* find */",
+		".dracula .HUD:after{background:#44475a;}",
+		""
+	],
+	"vomnibarOptions": {
+		"maxMatches": 10,
+		"queryInterval": 333,
+		"sizes": "77,3,44",
+		"styles": "dark dracula",
+		"actions": ""
+	}
+}

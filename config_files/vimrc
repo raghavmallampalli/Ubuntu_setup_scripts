@@ -1,30 +1,111 @@
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+function! IsWSL()
+    if has("unix")
+        let lines = readfile("/proc/version")
+        if lines[0] =~ '[mM]icrosoft'
+            return 1
+        endif
+    endif
+    return 0
+endfunction
+function! TwiddleCase(str)
+    if a:str ==# toupper(a:str)
+        let result = tolower(a:str)
+    elseif a:str ==# tolower(a:str)
+        let result = substitute(a:str,'\(\<\w\+\>\)', '\u\1', 'g')
+    else
+        let result = toupper(a:str)
+    endif
+    return result
+endfunction
+" Load plugins using https://github.com/junegunn/vim-plug lah
+call plug#begin('~/.vim/plugged')
+
+if !exists('g:vscode') " Only execute if not in VS Code
+    if has("unix") && empty(glob('~/.vim/autoload/plug.vim'))
+        silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+    endif
+    " Enabling colors for vim
+	if has('termguicolors')
+		let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+		let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+		set termguicolors
+	endif
+
+    " Plugins to load:
+    " Ranger support for vim
+    if has("nvim")
+        Plug 'rbgrouleff/bclose.vim'
+    endif
+    Plug 'francoiscabrol/ranger.vim', { 'on': 'RangerCurrentFile' }
+    
+    " Better status bar
+    Plug 'itchyny/lightline.vim'
+    
+    " Pop up menu with registers
+    Plug 'junegunn/vim-peekaboo'
+    
+    " Git support
+    Plug 'tpope/vim-fugitive'
+
+    " Theme
+    Plug 'dracula/vim', { 'as': 'dracula' }
+
+    " Fuzzy finder for vim
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+
+    " Aids in navigating tmux and vim with same hotkeys
+    Plug 'christoomey/vim-tmux-navigator'
+	
+	" Bracket colorization
+    Plug 'luochen1990/rainbow'
+
+    " icon support
+    Plug 'ryanoasis/vim-devicons'
+    
+    " completion engine
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+
 endif
 
-" Plugins Installed:
-" lightline: better status bar
-" fzf.vim: fuzzy finder for vim
-" ranger.vim: ranger plugin for vim
-" vim-peekaboo: Pop up menu with registers
-call plug#begin('~/.vim/plugged')
-	Plug 'easymotion/vim-easymotion'
-	Plug 'francoiscabrol/ranger.vim'
-	Plug 'itchyny/lightline.vim'
-	Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-	Plug 'junegunn/fzf.vim'
-	Plug 'junegunn/vim-peekaboo'
-	Plug 'tpope/vim-fugitive'
-	Plug 'tpope/vim-rhubarb'
-	Plug 'tpope/vim-surround'
-	Plug 'tpope/vim-eunuch'
-	Plug 'tpope/vim-surround'
-call plug#end()
 
-" Miscellaneous useful maps
-let mapleader = "," " yank to system register uses leader
+" Plugins common to VS code and terminal vim:
+
+" Navigate using keyboard. See :help easymotion
+Plug 'asvetliakov/vim-easymotion'
+
+" Change surrounding characters
+Plug 'tpope/vim-surround'
+
+call plug#end()
+    
+let mapleader = "," 
+
+" This is for wraping left and right so that cursor left at the beginning of the line goes to end of the previous line
+set whichwrap+=<,>,h,l,[,] 
+
+" Moving lines up and down
+nnoremap <silent> <A-j> :m .+1<CR>==
+nnoremap <silent> <A-k> :m .-2<CR>==
+inoremap <silent> <A-j> <Esc>:m .+1<CR>==gi
+inoremap <silent> <A-k> <Esc>:m .-2<CR>==gi
+vnoremap <silent> <A-j> :m '>+1<CR>gv=gv
+vnoremap <silent> <A-k> :m '<-2<CR>gv=gv
+
+set encoding=UTF-8
+set ignorecase
+set smartcase
+set splitright
+set splitbelow
+
+" Press ~ to change/toggle case of selection
+vnoremap <silent> ~ y:call setreg('', TwiddleCase(@"), getregtype(''))<CR>gv""Pgv
+
+" Miscellaneous useful maps: 
+" Open help in vertical split
+:cabbrev h vert h
 " vimdiff maps. also check do and dp
 noremap <silent> dT :diffthis<CR><C-w>w:diffthis<CR><C-w>w
 noremap dt :diffthis<CR>
@@ -33,110 +114,96 @@ noremap <silent> dU :diffupdate<CR>
 " turns off diff for all active buffers
 noremap <leader>s :set scrollbind!<CR>
 noremap <leader>n :set relativenumber!<CR>
-noremap <C-h> :%s,,,gc<Left><Left><Left><Left>
-" Escape insert mode by typing jj or kk quickly
-inoremap jj <Esc>
-inoremap kk <Esc>
-"The following piece of code for moving through wrapped lines refer:[http://vim.wikia.com/wiki/Move_through_wrapped_lines]
-map <silent> <Up> gk
-imap <silent> <Up> <C-o>gk
-map <silent> <Down> gj
-imap <silent> <Down> <C-o>gj
-map <silent> <home> g<home>
-imap <silent> <home> <C-o>g<home>
-map <silent> <End> g<End>
-imap <silent> <End> <C-o>g<End>
+noremap <leader><C-h> :%s,,,gc<Left><Left><Left><Left>
+if &diff                               " only for diff mode/vimdiff
+    set diffopt=filler,context:1000000 " filler is default and inserts empty lines for sync
+endif
 
 " Copy, cut and delete
+" Delete to black hole register
+vnoremap <Del> "_d
 vnoremap x "_d
-noremap x "_d
-" copy/cut/paste to/from system register (clipboard) on Linux or Windows
-set clipboard^=unnamed,unnamedplus
-" copy/cut/paste to/from system register in WSL: uncomment following lines when on WSL
-"let s:clip = '/mnt/c/Windows/System32/clip.exe'
-"if executable(s:clip)
-"	augroup WSLYank
-"        	autocmd!
-"        	autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
-"        augroup END
-"endif
-" Use terminal shortcut for pasting from system clipboard in WSL
+nnoremap <Del> "_dl
+nnoremap x "_dl
+set pastetoggle=<M-v>
+" copy/cut/paste to/from system register (clipboard)
+" If it does not work on WSL try:
+" https://github.com/neovim/neovim/wiki/FAQ#how-to-use-the-windows-clipboard-from-wsl
+set clipboard+=unnamedplus
 
-"This is for wraping left and right so that cursor left at the beginning of the line goes to end of the previous line
-set whichwrap+=<,>,h,l,[,] 
+" Configuration options that break VS Code
+if !exists('g:vscode')
 
-colorscheme ron
-syntax on
-set mouse=a
+    " Escape insert mode by typing jj or kk quickly
+    inoremap jj <Esc>
+    inoremap kk <Esc>
 
-if &diff                             " only for diff mode/vimdiff
-  set diffopt=filler,context:1000000 " filler is default and inserts empty lines for sync
-endif
+    " Moving through wrapped lines
+    nnoremap <silent> k gk
+    nnoremap <silent> j gj
+    nnoremap <silent> 0 g0
+    nnoremap <silent> $ g$
+    onoremap <silent> j gj
+    onoremap <silent> k gk
+    
+    syntax on
+    set mouse=a
+    setlocal linebreak
+    setlocal nolist
+    setlocal display+=lastline
+    set statusline+=%F
+    " Shows line number to the left. :set nornu and :set nonu to turn off.
+    set number
+    set cursorline
+    let g:rainbow_active = 1
+    nnoremap <esc> :noh<return><esc>
+    nnoremap <esc>^[ <esc>^[
+    " Theme
+    let g:dracula_italic = 0 " For Windows terminal
+    colorscheme dracula
+    
+    " Set indents as 4 spaces where it makes sense to
+    " Only do this part when compiled with support for autocommands.
+    if has("autocmd")
+        " Use filetype detection and file-based automatic indenting.
+        filetype plugin indent on
+        " Use actual tab chars in Makefiles.
+        autocmd FileType make set tabstop=8 shiftwidth=8 softtabstop=0 noexpandtab
+    endif
+    
+    set tabstop=4 softtabstop=4 expandtab shiftwidth=4 smarttab
+    noremap <leader>ts :set list listchars+=tab:>-<CR>
+    noremap <leader>td :set list&<CR>
  
-setlocal linebreak
-setlocal nolist
-setlocal display+=lastline
-set statusline+=%F
+    " ranger vim integration
+    let g:ranger_map_keys = 0
+    map <leader>r :RangerCurrentFile<CR>
+    let g:ranger_command_override = 'ranger --cmd "set show_hidden=true"'
+    
+    " Work with lightline
+    set laststatus=2
+    set noshowmode
+    let g:lightline = {
+        \ 'colorscheme': 'dracula',
+        \ 'active': {
+        \   'left': [ [ 'mode', 'paste' ],
+        \             [ 'gitbranch', 'readonly', 'filename', 'modified' ],
+	    \             [ 'cocstatus', 'readonly' ]]
+        \ },
+        \ 'component_function': {
+        \   'gitbranch': 'FugitiveHead',
+        \   'cocstatus': 'coc#status',
+        \ },
+        \ }
 
-" Shows line number to the left. try set nornu and set nonu to turn off.
-set number
-highlight LineNr ctermfg=grey
+	" Set cursors correctly on entering and leaving nvim
+	au VimEnter,VimResume * set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+	  \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
+	  \,sm:block-blinkwait175-blinkoff150-blinkon175
+    " Try changing to blinkon0 to toggle behaviour
+	au VimLeave,VimSuspend * set guicursor=a:block-blinkon1
+    " Source .vimrc by sourcing init.vim on save
+    autocmd! bufwritepost ~/.vimrc nested source $MYVIMRC
+endif
 
-" ranger vim integration
-let g:ranger_map_keys = 0
-map <leader>r :RangerWorkingDirectoryNewTab<CR>
-let g:ranger_command_override = 'ranger --cmd "set show_hidden=true"'
-
-" Work with lightline
-set laststatus=2
-set noshowmode
-let g:lightline = {
-      \ 'colorscheme': 'wombat',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'FugitiveHead',
-      \ },
-      \ }
-
-" Work with fzf.vim 
-map <leader>f :Files<CR> " Check ^x, ^v while in fzf
-map <leader>F :Files<Space> 
-let g:fzf_action = {
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-x': 'split',
-  \ 'ctrl-v': 'vsplit',
-  \ 'ctrl-y': {lines -> setreg('*', join(lines, "\n"))}}
-" Mapping selecting mappings
-nmap <leader><tab> <plug>(fzf-maps-n)
-xmap <leader><tab> <plug>(fzf-maps-x)
-omap <leader><tab> <plug>(fzf-maps-o)
-" Insert mode completion
-imap <c-x><c-d> <plug>(fzf-complete-word)
-imap <c-x><c-f> <plug>(fzf-complete-path)
-imap <c-x><c-l> <plug>(fzf-complete-line)
-inoremap <expr> <c-x><c-f> fzf#vim#complete#path('rg --files')
-" https://github.com/junegunn/fzf.vim for more detailed list
-
-" Tab shortcuts: avoid using tabs unless you use vim as IDE or have mouse mode on. Pain in the ass.
-noremap <leader>t<Right> :tabn<CR>
-noremap <leader>tl :tabn<CR>
-noremap <leader>t<Left> :tabp<CR>
-noremap <leader>th :tabp<CR>
-noremap <leader>tn :tabnew<CR>
-
-" Press ~ to change case of selection
-function! TwiddleCase(str)
-	if a:str ==# toupper(a:str)
-		let result = tolower(a:str)
-	elseif a:str ==# tolower(a:str)
-		let result = substitute(a:str,'\(\<\w\+\>\)', '\u\1', 'g')
-	else
-		let result = toupper(a:str)
-	endif
-	return result
-endfunction
-vnoremap <silent> ~ y:call setreg('', TwiddleCase(@"), getregtype(''))<CR>gv""Pgv
-
+source ~/.vim/coc-setup.vim
