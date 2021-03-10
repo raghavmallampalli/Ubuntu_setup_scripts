@@ -1,0 +1,124 @@
+export full_scripts_path=/media/Windows/Media/code/Ubuntu_setup_scripts
+
+# config for nnn: command line file manager
+[ -n "$NNNLVL" ] && RPS1="N$NNNLVL $RPS1"
+n ()
+{
+    # Block nesting of nnn in subshells
+    if [ -n $NNNLVL ] && [ "${NNNLVL:-0}" -ge 1 ]; then
+        echo "nnn is already running"
+        return
+    fi
+    export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+
+    # Actual nnn command to execute
+    nnn -axeH "$@"
+
+    # saving last used directory
+    if [ -f "$NNN_TMPFILE" ]; then
+            . "$NNN_TMPFILE"
+            rm -f "$NNN_TMPFILE" > /dev/null
+    fi
+}
+# bookmarks
+export NNN_BMS="c:/media/Windows/Media/code/;d:$HOME/Downloads;p:/media/Windows/Media/Photo Editing/;6:/media/Windows/Media/College/Semester 6/"
+#      NNN_FCOLORS='c1e2272e006033f7c6d6abc4'
+export NNN_FCOLORS='c1e2677800609ff7c6d6abd2'
+export NNN_PLUG='d:diffs;f:fzfasd;o:fzopen;p:preview-tui;s:suedit;t:nmount;v:imgview;x:_chmod +x $nnn'
+export NNN_FIFO='/tmp/nnn.fifo'
+export NNN_USE_EDITOR=1
+
+# VTE fix for tilix
+if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
+        source /etc/profile.d/vte.sh
+fi
+
+# fzf-fasd integration
+j () {
+    fasdlist=$( fasd -d -l -r $1 | \
+      fzf --query="$1 " --select-1 --exit-0 --height=25% --reverse --tac --no-sort --cycle) &&
+    cd "$fasdlist"
+}
+v () {
+    export fasdlist=$( fasd -f -l -r $1 | \
+        fzf --query="$1 " --select-1 --exit-0 --height=25% --reverse --tac --no-sort --cycle)
+    echo "Opening $fasdlist. Press any key to continue."
+    # Do not remove this line nvim opens with artefacts without it.
+    read dump
+    nvim -O "$fasdlist"
+}
+
+bindkey -v
+if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
+	# Speeds up tab autocompletion by reducing size of PATH variable
+	# If you install Windows programmes that interact with WSL,
+	# Comment out this line and add directories accordingly
+	export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/bin:$HOME/.cargo/bin:/mnt/c/Program\ Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/Raghav\ Mallampalli/AppData/Local/Programs/Microsoft\ VS\ Code\ Insiders/bin:/mnt/c/Users/Raghav\ Mallampalli/AppData/Local/Programs/Microsoft\ VS\ Code/bin
+fi
+
+if [ -f ~/.bash_aliases ]; then
+  source ~/.bash_aliases
+fi
+setopt nonomatch # allows globbing (name* matching in apt, ls etc.), use with caution
+[[ -a /etc/zsh_command_not_found ]] && . /etc/zsh_command_not_found
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_SPACE
+
+# Setting the default text editor to nvim
+export VISUAL=/usr/bin/nvim
+export EDITOR=/usr/bin/nvim
+export PAGER='bat --style=plain'
+# vi at terminal
+bindkey 'jj' vi-cmd-mode
+bindkey 'jk' vi-cmd-mode
+bindkey 'kk' vi-cmd-mode
+autoload edit-command-line; zle -N edit-command-line
+bindkey -M vicmd V edit-command-line
+
+# bat configuration
+export BAT_THEME="Dracula"
+export BAT_PAGER="less -FRX"
+
+eval "$(dircolors $HOME/Dracula.dircolors)"
+
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+
+export PATH="/media/Windows/Media/code/julia-1.5.3/bin:$PATH"
+
+# GULP
+export PATH="/media/Windows/Media/code/gulp-6.0/Src:$PATH"
+
+# CUDA
+export PATH=/usr/local/cuda-11.0/bin${PATH:+:${PATH}}
+
+#export PYTHONSTARTUP=/home/raghav/.pythonrc.py
+
+# fasd
+fasd_cache="$HOME/.fasd-init-zsh"
+if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
+	fasd --init posix-alias zsh-hook zsh-ccomp zsh-ccomp-install >| "$fasd_cache"
+fi
+source "$fasd_cache" 2>/dev/null
+unset fasd_cache
+
+############################################
+# automatically attaches 'General' or 'General-Minimal' if it exists and is not attached.
+# Creates if it does not.
+ if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
+	Session="General-Minimal"
+else
+	Session="General"
+fi
+if [[ -z ${TERM_PROGRAM} && -z ${TMUX} ]]; then
+	tmux ls 2>/dev/null | grep $Session >/dev/null
+	if [ $? -eq 0 ]; then
+		tmux ls | grep $Session | grep 'attached' >/dev/null
+		if [ $? -eq 1 ]; then
+			tmux -u attach -t $Session
+		fi
+	else
+		tgex # Or tsimp 
+	fi
+fi
+###########################################

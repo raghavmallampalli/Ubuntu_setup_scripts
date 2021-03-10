@@ -17,73 +17,110 @@ function! TwiddleCase(str)
     endif
     return result
 endfunction
-" Load plugins using https://github.com/junegunn/vim-plug lah
-call plug#begin('~/.vim/plugged')
+if has("unix") && empty(glob('~/.vim/autoload/plug.vim'))
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+                \ https://raw.githubusercontent.com/
+                \junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+" Enabling 256 colors for vim
+if has('termguicolors')
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    set termguicolors
+endif
 
+let mapleader = "," 
+nnoremap gm m
+
+" Load plugins using https://github.com/junegunn/vim-plug
+call plug#begin('~/.vim/plugged')
 if !exists('g:vscode') " Only execute if not in VS Code
-    if has("unix") && empty(glob('~/.vim/autoload/plug.vim'))
-        silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-        autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-    endif
-    " Enabling colors for vim
-	if has('termguicolors')
-		let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-		let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-		set termguicolors
-	endif
 
     " Plugins to load:
-    " Ranger support for vim
-    if has("nvim")
-        Plug 'rbgrouleff/bclose.vim'
-    endif
-    Plug 'francoiscabrol/ranger.vim', { 'on': 'RangerCurrentFile' }
-    
-    " Better status bar
-    Plug 'itchyny/lightline.vim'
-    
-    " Pop up menu with registers
-    Plug 'junegunn/vim-peekaboo'
-    
-    " Git support
-    Plug 'tpope/vim-fugitive'
-
-    " Theme
-    Plug 'dracula/vim', { 'as': 'dracula' }
-
-    " Fuzzy finder for vim
-    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-
+    " Auto close brackets
+    Plug 'jiangmiao/auto-pairs'
+    " Repeat for plugins, dependancy for easyclip
+    Plug 'tpope/vim-repeat'
     " Aids in navigating tmux and vim with same hotkeys
     Plug 'christoomey/vim-tmux-navigator'
-	
-	" Bracket colorization
-    Plug 'luochen1990/rainbow'
-
-    " icon support
-    Plug 'ryanoasis/vim-devicons'
-    
+    " Git support
+    " Dependancy for lightline
+    Plug 'tpope/vim-fugitive'
+    " Fuzzy finder for vim
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    " nnn support
+    Plug 'mcchrish/nnn.vim'
+    let g:nnn#action = {
+        \ '<c-t>': 'tab split',
+        \ '<c-x>': 'split',
+        \ '<c-v>': 'vsplit' 
+    \}
+    let g:nnn#set_default_mappings = 0
+    let g:nnn#layout = { 
+                \'window': { 
+                    \'width': 0.9, 
+                    \'height': 0.6, 
+                    \'highlight': 'Debug' 
+                \} 
+    \}
+    let g:nnn#command = 'nnn -xdeH'
+    noremap <silent> <leader>nn :NnnPicker %:p:h<CR>
+    " Pop up menu with registers
+    Plug 'junegunn/vim-peekaboo'
+    " Navigate using keyboard. See :help easymotion
+    Plug 'easymotion/vim-easymotion'
     " completion engine
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-
+    " Theme and colors
+    " icon support
+    Plug 'ryanoasis/vim-devicons'
+    let g:fzf_preview_use_dev_icons = 1
+    " devicons character width
+    let g:fzf_preview_dev_icon_prefix_string_length = 3
+    " Devicons can make fzf-preview slow when the number of results is high.
+    " By default icons are disabled when number of results is higher that 1000
+    let g:fzf_preview_dev_icons_limit = 1000
+    let g:airline_powerline_fonts = 1
+    Plug 'vim-airline/vim-airline'
+    let g:airline#extensions#tabline#enabled = 1
+    " Dracula theme
+    Plug 'dracula/vim', { 'as': 'dracula' }
+    let g:dracula_italic = 0
+    Plug 'arakashic/nvim-colors-solarized', { 'for': 'markdown' }
+    colorscheme dracula
+    " set light theme for certain files
+    "autocmd FileType markdown set background=light 
+    "\| colorscheme solarized
+    " Bracket colorization
+    Plug 'luochen1990/rainbow'
+    let g:rainbow_active = 1
+else
+    " Fork of easymotion that works in VS Code
+    Plug 'asvetliakov/vim-easymotion', {'dir': '~/.vscode_easymotion'}
 endif
 
-" Plugins common to VS code and terminal vim:
+" Clipboard functionality
+Plug 'svermeulen/vim-cutlass'
+nnoremap m d
+xnoremap m d
+nnoremap mm dd
+nnoremap M D
+" copy/cut/paste to/from system register (clipboard)
+set clipboard+=unnamedplus
+" If it does not work on WSL try:
+" https://github.com/neovim/neovim/wiki/FAQ#how-to-use-the-windows-clipboard-from-wsl
 
-" Navigate using keyboard. See :help easymotion
-Plug 'asvetliakov/vim-easymotion'
-
-" Change surrounding characters
+" Change surrounding characters of block
 Plug 'tpope/vim-surround'
 
 call plug#end()
-    
-let mapleader = "," 
 
 " This is for wraping left and right so that cursor left at the beginning of the line goes to end of the previous line
-set whichwrap+=<,>,h,l,[,] 
+set whichwrap+=<,>,h,l,[,]
+" Spell check is very distracting. Turn on if absolutely required.
+" set spell spelllang=en_us
 
 " Moving lines up and down
 nnoremap <silent> <A-j> :m .+1<CR>==
@@ -94,10 +131,14 @@ vnoremap <silent> <A-j> :m '>+1<CR>gv=gv
 vnoremap <silent> <A-k> :m '<-2<CR>gv=gv
 
 set encoding=UTF-8
+set exrc
 set ignorecase
 set smartcase
 set splitright
 set splitbelow
+" Remap Ctrl+T to new tab.
+" Old functionality is tagging
+nmap <C-t> :tabnew<CR>
 
 " Press ~ to change/toggle case of selection
 vnoremap <silent> ~ y:call setreg('', TwiddleCase(@"), getregtype(''))<CR>gv""Pgv
@@ -112,26 +153,14 @@ noremap dO :diffoff!<CR>
 noremap <silent> dU :diffupdate<CR>
 " turns off diff for all active buffers
 noremap <leader>s :set scrollbind!<CR>
-noremap <leader>n :set relativenumber!<CR>
+noremap <leader>nr :set relativenumber!<CR>
 noremap <leader><C-h> :%s,,,gc<Left><Left><Left><Left>
 if &diff                               " only for diff mode/vimdiff
     set diffopt=filler,context:1000000 " filler is default and inserts empty lines for sync
 endif
 
-" Copy, cut and delete
-" Delete to black hole register
-vnoremap <Del> "_d
-vnoremap x "_d
-nnoremap <Del> "_dl
-nnoremap x "_dl
-set pastetoggle=<M-v>
-" copy/cut/paste to/from system register (clipboard)
-" If it does not work on WSL try:
-" https://github.com/neovim/neovim/wiki/FAQ#how-to-use-the-windows-clipboard-from-wsl
-set clipboard+=unnamedplus
-
-" Configuration options that break VS Code
 if !exists('g:vscode')
+    " Configuration options that break VS Code
 
     " Escape insert mode by typing jj or kk quickly
     inoremap jj <Esc>
@@ -154,13 +183,9 @@ if !exists('g:vscode')
     " Shows line number to the left. :set nornu and :set nonu to turn off.
     set number
     set cursorline
-    let g:rainbow_active = 1
     nnoremap <esc> :noh<return><esc>
     nnoremap <esc>^[ <esc>^[
-    " Theme
-    let g:dracula_italic = 0 " For Windows terminal
-    colorscheme dracula
-    
+
     " Set indents as 4 spaces where it makes sense to
     " Only do this part when compiled with support for autocommands.
     if has("autocmd")
@@ -169,40 +194,27 @@ if !exists('g:vscode')
         " Use actual tab chars in Makefiles.
         autocmd FileType make set tabstop=8 shiftwidth=8 softtabstop=0 noexpandtab
     endif
-    
     set tabstop=4 softtabstop=4 expandtab shiftwidth=4 smarttab
     noremap <leader>ts :set list listchars+=tab:>-<CR>
     noremap <leader>td :set list&<CR>
- 
-    " ranger vim integration
-    let g:ranger_map_keys = 0
-    map <leader>r :RangerCurrentFile<CR>
-    let g:ranger_command_override = 'ranger --cmd "set show_hidden=true"'
-    
-    " Work with lightline
-    set laststatus=2
-    set noshowmode
-    let g:lightline = {
-        \ 'colorscheme': 'dracula',
-        \ 'active': {
-        \   'left': [ [ 'mode', 'paste' ],
-        \             [ 'gitbranch', 'readonly', 'filename', 'modified' ],
-	    \             [ 'cocstatus', 'readonly' ]]
-        \ },
-        \ 'component_function': {
-        \   'gitbranch': 'FugitiveHead',
-        \   'cocstatus': 'coc#status',
-        \ },
-        \ }
 
-	" Set cursors correctly on entering and leaving nvim
-	au VimEnter,VimResume * set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
-	  \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
-	  \,sm:block-blinkwait175-blinkoff150-blinkon175
-    " Try changing to blinkon0 to toggle behaviour
-	au VimLeave,VimSuspend * set guicursor=a:block-blinkon1
-    " Source .vimrc by sourcing init.vim on save
-    autocmd! bufwritepost ~/.vimrc nested source $MYVIMRC
+    if has('nvim')
+        " Set cursors correctly on entering and leaving nvim
+        au VimEnter,VimResume * set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+          \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
+          \,sm:block-blinkwait175-blinkoff150-blinkon175
+        " Try changing to blinkon0 to toggle behaviour
+        au VimLeave,VimSuspend * set guicursor=a:block-blinkon1
+    endif
+        " Source .vimrc by sourcing init.vim on save
+        autocmd! bufwritepost ~/.vimrc nested source $MYVIMRC
+else
+    " Configuration options exclusive to VS Code
+    nnoremap <silent> <C-h> <Cmd>call VSCodeNotify("workbench.action.focusLeftGroup")<CR>
+    nnoremap <silent> <C-j> <Cmd>call VSCodeNotify("workbench.action.focusBelowGroup")<CR>
+    nnoremap <silent> <C-k> <Cmd>call VSCodeNotify("workbench.action.focusAboveGroup")<CR>
+    nnoremap <silent> <C-l> <Cmd>call VSCodeNotify("workbench.action.focusRightGroup")<CR>
 endif
-
-source ~/.vim/coc-setup.vim
+if !exists('g:vscode')
+    source ~/.vim/coc-setup.vim
+endif

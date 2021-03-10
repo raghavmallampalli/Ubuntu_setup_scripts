@@ -1,3 +1,7 @@
+
 {
-    "python.jediPath": "/home/raghav/.local/lib/python3.6/site-packages"
+    "diagnostic.checkCurrentLine": true,
+    "coc.preferences.hoverTarget": "float",
+    "suggest.floatEnable":true,
+    "suggest.removeDuplicateItems": true
 }

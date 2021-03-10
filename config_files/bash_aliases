@@ -2,7 +2,7 @@ alias maxvol="pactl set-sink-volume @DEFAULT_SINK@ 150%"
 alias update="sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y"
 alias download="wget --random-wait -r -p --no-parent -e robots=off -U mozilla"
 alias server="ifconfig | grep inet && python3 -m http.server"
-alias la='ls -la --color'
+alias la='n'
 alias gettime='sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d" " -f5-8)Z";'
 alias list-repos="apt-cache policy |grep http |awk '{print $2 $3}' |sort -u"
 alias xo="xdg-open"
@@ -49,70 +49,67 @@ alias dirm='docker image rm'
 alias dport='docker port'
 
 # tmux aliases
-alias ta="tmux a"
+alias ta="tmux -u attach"
 alias tgex="tmux -u new-session -s General \; \
-		split-window -v \; \
-		send-keys ' . ranger' C-m \; \
-		swap-pane -U\; \
-		resize-pane -U 4\; \
-		selectp -D \; \
-		rename-window 'general' \; \
-            neww \; \
-              send-keys ' htop' C-m \; \
-              split-window -h \; \
-              send-keys ' watch df' C-m \; \
-              split-window -v \; \
-	      selectp -D \; \
-              send-keys ' nvim $full_scripts_path/Help.md' C-m \; \
-              rename-window 'performance' \; \
-            select-window -l" # default
+        split-window -h \; \
+            send-keys ' n' C-m \; \
+            swap-pane -U\; \
+            selectp -R \; \
+            rename-window 'general' \; \
+        neww \; \
+            send-keys ' htop' C-m \; \
+            split-window -h \; \
+            send-keys ' watch sensors' C-m \; \
+            split-window -v \; \
+            send-keys 'watch df' C-m \; \
+            rename-window 'performance' \; \
+        select-window -t 1 \; \
+        resize-pane -t 1 -x 30"
 alias tsimp="tmux -u new-session -s General-Minimal \; \
-		split-window -v \; \
-		send-keys ' . ranger' C-m \; \
-		swap-pane -U\; \
-		resize-pane -U 4\; \
-		selectp -D \; \
-		rename-window 'general' \; \
-            neww \; \
-              send-keys ' nvim $full_scripts_path/Help.md' C-m \; \
-              rename-window 'help' \; \
-            select-window -l" # set as default for WSL
+        split-window -h \; \
+            send-keys ' n' C-m \; \
+            swap-pane -D\; \
+            resize-pane -x 20\; \
+            selectp -R \; \
+            rename-window 'general' \; \
+        select-window -l" # set as default for WSL
 alias trox="tmux -u new-session -s ROS\; \
-            neww \; \
-              send-keys ' roscore' C-m \; \
-              split-window -h \; \
-              send-keys ' htop' C-m \; \
-              split-window -v \; \
-              send-keys ' watch sensors' C-m \; \
-              rename-window 'performance' \; \
-            select-window -l" #ROS
+        neww \; \
+            send-keys ' roscore' C-m \; \
+            split-window -h \; \
+            send-keys ' htop' C-m \; \
+            split-window -v \; \
+            send-keys ' watch sensors' C-m \; \
+            rename-window 'performance' \; \
+        select-window -l" #ROS
 alias tsetux="tmux -u new-session -s 'Setup'\; \
-	      	send-keys ' vimdiff ~/.vimrc $full_scripts_path/config_files/vimrc' C-m  \; \
-		rename-window 'vimrc' \; \
-	      neww \; \
-	      	send-keys ' vimdiff ~/.bash_aliases $full_scripts_path/config_files/bash_aliases' C-m \; \
-		rename-window 'aliases' \; \
-	      neww \; \
-	      	send-keys ' vimdiff ~/.tmux.conf $full_scripts_path/config_files/tmux.conf' C-m \; \
-		rename-window 'tmux conf' \; \
-	      neww \; \
-	      	send-keys ' vimdiff ~/.config/ranger/rc.conf $full_scripts_path/config_files/rc.conf' C-m \; \
-		rename-window 'rc' \; \
-	      neww \; \
-	      	send-keys ' vimdiff ~/.config/ranger/scope.sh $full_scripts_path/config_files/scope.sh' C-m \; \
-		rename-window 'rifle' \; \
-	      neww \; \
-	      	send-keys ' vimdiff ~/.config/ranger/commands.py $full_scripts_path/config_files/commands.py' C-m \; \
-		rename-window 'rn commands' \; \
-	      select-window -l"  # edit setup scripts.
+            send-keys ' vimdiff ~/.vimrc $full_scripts_path/config_files/vimrc' C-m  \; \
+            rename-window 'vimrc' \; \
+        neww \; \
+            send-keys ' vimdiff ~/.bash_aliases $full_scripts_path/config_files/bash_aliases' C-m \; \
+            rename-window 'aliases' \; \
+        neww \; \
+            send-keys ' vimdiff ~/.tmux.conf $full_scripts_path/config_files/tmux.conf' C-m \; \
+            rename-window 'tmux conf' \; \
+        neww \; \
+            send-keys ' vimdiff ~/.config/ranger/rc.conf $full_scripts_path/config_files/rc.conf' C-m \; \
+            rename-window 'rc' \; \
+        neww \; \
+            send-keys ' vimdiff ~/.config/ranger/scope.sh $full_scripts_path/config_files/scope.sh' C-m \; \
+            rename-window 'rifle' \; \
+        neww \; \
+            send-keys ' vimdiff ~/.config/ranger/commands.py $full_scripts_path/config_files/commands.py' C-m \; \
+            rename-window 'rn commands' \; \
+        select-window -l"  # edit setup scripts.
 # WSL compatibility commands
 alias clip.exe='/mnt/c/Windows/System32/clip.exe'
 alias explorer.exe='/mnt/c/Windows/explorer.exe'
 # fasd aliases: see ~/.fasd-init-zsh for full list
 alias cz='fasd_cd -d'
-alias v='f -e nvim' # quick opening files with nvim
+#alias v='f -e nvim' # quick opening files with nvim
 alias o='a -e xdg-open' # quick opening files with xdg-open
 alias c='fasd -ia -e code' # quick opening files with xdg-open
 
 # Web development
 alias jb="bundle exec jekyll build && rsync -avz -e 'ssh -i ~/.ssh/mallampalli_rsa' /home/raghav/code/raghav-mallampalli-site/_site/ mallampalli@mallampalli.in://home/mallampalli/public_html/raghav/"
+alias cp="/usr/local/bin/advcp -g"

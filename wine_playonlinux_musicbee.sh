@@ -21,8 +21,13 @@ read dump
 # credits: https://getmusicbee.com/forum/index.php?topic=5338.30
 execute sudo dpkg --add-architecture i386 
 wget -nc https://dl.winehq.org/wine-builds/winehq.key -O- | sudo apt-key add - # check if the file remains post installation
-sudo add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main' # for bionic. Not released for focal
-sudo add-apt-repository ppa:cybermax-dexter/sdl2-backport # very poor solution, temporary. but it works.
+
+if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -lt 19 ]]; then
+    sudo add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main' # for bionic
+    sudo add-apt-repository ppa:cybermax-dexter/sdl2-backport # very poor solution, temporary. but it works.
+else
+    sudo add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main' # for focal
+fi
 
 wget -q "http://deb.playonlinux.com/public.gpg" -O- | sudo apt-key add - # check if the file remains post installation
 sudo wget http://deb.playonlinux.com/playonlinux_bionic.list -O /etc/apt/sources.list.d/playonlinux.list # for bionic. Not released for focal
@@ -37,8 +42,8 @@ execute sudo apt-get install winetricks coreutils -y # coreutils for realpath
 sh ./config_files/winefontssmoothing_en.sh
 rm -r ~/.wine
 WINEARCH=win32 WINEPREFIX=~/.wine wine wineboot
-wine  ~/Downloads/MusicBeeSetup*
-winetricks -q dotnet45 mfc42 xmllite gdiplus d3dx9 vcrun2008 wmp10
+WINEARCH=win32 WINEPREFIX=~/.wine wine  ~/Downloads/MusicBeeSetup*
+WINEARCH=win32 WINEPREFIX=~/.wine winetricks -q dotnet461 dotnet48 mfc42 xmllite gdiplus d3dx9 vcrun2008 wmp10
 
 execute sudo apt-get install xterm playonlinux -y
 

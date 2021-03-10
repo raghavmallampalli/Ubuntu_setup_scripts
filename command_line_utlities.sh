@@ -24,12 +24,14 @@ execute sudo apt-get install neovim -y
 cp ./config_files/coc-settings.json ./config_files/coc-setup.vim ~/.vim/
 ! [ -d ~/.config/nvim ] && mkdir ~/.config/nvim/
 touch ~/.config/nvim/init.vim
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 # write lines to init.vim to use same config as vim
 cat << EOF >> ~/.config/nvim/init.vim
-echo set runtimepath^=~/.vim runtimepath+=~/.vim/after 
+set runtimepath^=~/.vim runtimepath+=~/.vim/after 
 let &packpath = &runtimepath 
 source ~/.vimrc
 EOF
+execute pip3 install --user --upgrade pynvim
 
 # clipboard support in neovim for WSL
 if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then 
@@ -39,39 +41,18 @@ if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
     mv /tmp/win32yank.exe ~/bin
 fi
 
-# Install Docker: untested
-if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then 
-    echo "Install Docker Desktop for windows from https://www.docker.com/products/docker-desktop" 
-else 
-    echo "Uninstalling existing instances of Docker. Ctrl+C if you do not wish to and comment the following lines out. [ENTER] to continue."
-    read dump
-    execute sudo apt-get remove docker docker-engine docker.io containerd runc
-    sudo apt-get install \ 
-        apt-transport-https \ 
-        ca-certificates \ 
-        gnupg-agent \ 
-        software-properties-common
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    execute sudo add-apt-repository \ 
-        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \ 
-        $(lsb_release -cs) \ 
-        stable"
-    execute sudo apt-get update
-    execute sudo apt-get install docker-ce docker-ce-cli containerd.io
-fi
-
 # download and install bat, cat with syntax highlighting
 echo "Installing bat, a handy replacement for cat"
 latest_bat_setup=$(curl --silent "https://api.github.com/repos/sharkdp/bat/releases/latest" | grep "deb" | grep "browser_download_url" | head -n 1 | cut -d \" -f 4)
 aria2c --file-allocation=none -c -x 10 -s 10 --dir /tmp -o bat.deb $latest_bat_setup
 execute sudo dpkg -i /tmp/bat.deb
-execute sudo apt-get install -f
+execute sudo apt-get install -f -y
 
 echo "Installing fd, a speedier replacement for find"
 latest_fd_setup=$(curl --silent "https://api.github.com/repos/sharkdp/fd/releases/latest" | grep "deb" | grep "browser_download_url" | head -n 1 | cut -d \" -f 4)
 aria2c --file-allocation=none -c -x 10 -s 10 --dir /tmp -o fd.deb $latest_fd_setup
 execute sudo dpkg -i /tmp/fd.deb
-execute sudo apt-get install -f
+execute sudo apt-get install -f -y
 execute sudo apt-get install pciutils -y
 
 # directory navigation tool - https://github.com/clvv/fasd
@@ -79,22 +60,21 @@ execute sudo apt-get install fasd -y
 echo 'eval "$(fasd --init auto)"' >> ~/.zshrc
 echo 'eval "$(fasd --init auto)"' >> ~/.zshrc
 echo "zmodule wookayin/fzf-fasd" >> ~/.zimrc
+echo "zmodule romkatv/powerlevel10k" >> ~/.zimrc
 echo "Run zimfw install, clean and compile on completion"
 
-# ranger, CLI file explorer - https://github.com/ranger/ranger
-execute sudo apt-get install bsdtar tar unrar unzip atool -y
-execute pip3 install ranger-fm Pygments pygments-style-dracula -y
-# ranger configuration: untested
-cp ./config_files/rc.conf ./config_files/commands.py ./config_files/bookmarks .config_files/scope.sh ~/.config/ranger/
-mkdir ~/.config/ranger/plugins/
-cp ./config_files/plugin_fasd_log.py ~/.config/ranger/plugins/
-git clone https://github.com/alexanderjeurissen/ranger_devicons.git ~/.config/ranger/plugins/ranger_devicons
+# nnn, a command line file explorer
+sudo apt-get install pkg-config libncursesw5-dev libreadline-dev
+git clone https://github.com/jarun/nnn.git
+cd nnn
+sudo make O_NERD=1 strip install
+curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs | sh
 
 echo "Download and install Windscribe with binaries. https://windscribe.com/guides/linux#how-to Will be added to sh file when out of beta."
 
 # ripgrep: faster searcher than grep
 # https://github.com/BurntSushi/ripgrep
-curl -LO /tmp/rg.deb https://github.com/BurntSushi/ripgrep/releases/download/11.0.2/ripgrep_11.0.2_amd64.deb
+wget -o /tmp/rg.deb https://github.com/BurntSushi/ripgrep/releases/download/11.0.2/ripgrep_11.0.2_amd64.deb --quiet
 execute sudo dpkg -i /tmp/rg.deb
 execute sudo apt-get install -f
 cp ./config_files/globalgitignore ~/.gitignore
@@ -112,13 +92,6 @@ if [[ $(command -v fzf) ]]; then
     echo 'export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"' >> ~/.zshrc
     echo 'export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"' >> ~/.bashrc
 fi
-
-# cheat sheet - http://cheat.sh
-mkdir -p ~/bin/ && curl https://cht.sh/:cht.sh > ~/bin/cht.sh && chmod +x ~/bin/cht.sh
-# there may be lag on first two runs after boot. Should improve on consecutive runs.
-
-# command line help - https://github.com/gleitz/howdoi 
-execute sudo pip3 install howdoi
 
 # ffmpeg
 execute sudo apt-get install libhdf5-dev exiftool ffmpeg -y

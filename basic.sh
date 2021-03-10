@@ -48,6 +48,7 @@ execute sudo apt-get install vim -y # vim gnome adds system clipboard functional
 execute sudo apt-get install htop -y
 execute sudo apt-get install run-one xbindkeys xbindkeys-config wmctrl xdotool -y
 execute sudo apt-get install ruby-full
+execute sudo apt-get install fonts-powerline aria2 -y
 execute gem install bundler
 cp ./config_files/vimrc ~/.vimrc
 
@@ -55,47 +56,40 @@ cp ./config_files/vimrc ~/.vimrc
 # a branched version of zim is being installed. read the branched version of the docs.
 # Checks if zsh is partially or completely installed to remove the folders and reinstall it
 spatialPrint "Setting up zsh + zim now"
-zsh_folder=/opt/.zsh/
 if [ -f ~/.zshrc ]; then
     cp -L ~/.zshrc ~/backup_zshrc
     echo ".zshrc backed up to ~/backup_zshrc. Deleting."
 fi
-if [[ -d $zsh_folder ]];then
-    sudo rm -r /opt/.zsh/*
-fi
 rm -rf ~/.z*
-
 execute sudo apt-get install zsh -y
-sudo mkdir -p /opt/.zsh/ && sudo chmod ugo+w /opt/.zsh/
-export ZIM_HOME=/opt/.zsh/zim
 command -v zsh | sudo tee -a /etc/shells
 sudo chsh -s "$(command -v zsh)" "${USER}"
 curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
-echo "zmodule \'softmoth/zsh-vim-mode\'" >> ~/.zimrc
+echo "zmodule softmoth/zsh-vim-mode" >> ~/.zimrc
 echo "Execute 'zimfw install' after terminal restart"
-
-execute sudo apt-get install fonts-powerline aria2 -y
-
 # Create bash aliases and link bash and zsh aliases
 if [ -f ~/.bash_aliases ]; then
     cp -L ~/.bash_aliases ~/backup_bash_aliases
     echo "Bash aliases backed up to ~/backup_bash_aliases. Deleting."
 fi
-cp ./config_files/bash_aliases /opt/.zsh/bash_aliases
-ln -s -f /opt/.zsh/bash_aliases ~/.bash_aliases
-cp ./config_files/.zshrc.local ~/.zshrc.localj
-echo "source ~/.zshrc.local"
+cp ./config_files/bash_aliases ~/.bash_aliases
+cp ./config_files/.zshrc.local ~/.zshrc.local
+echo "source ~/.zshrc.local" >> ~/.zshrc
+cp ./config_files/Dracula.dircolors ~/
 
 # tmux set up. TEST
 if [ -f ~/.tmux.conf ]; then
     cp -L ~/.tmux.conf ~/backup_tmux.conf
     echo ".tmux.conf backed up to ~/backup_tmux.conf. Deleting."
 fi
+# build dependencies
+execute sudo apt-get install libevent-dev ncurses-dev build-essential bison pkg-config -y
 git clone https://github.com/tmux/tmux.git ~/tmux
 cd ~/tmux
 sh autogen.sh
 sh configure && make
 cd -
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 cp ./config_files/tmux.conf ~/.tmux.conf
 echo "Press Ctrl+A I (capital I) on first run of tmux to install plugins."
 
@@ -125,7 +119,7 @@ fi
 
 # NodeJS installation
 curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-sudo apt-get install -y nodejs
+execute sudo apt-get install -y nodejs
 
 # installing octave, python3
 execute sudo apt-get install octave -y # comment out if you have access to MATLAB. 
@@ -138,20 +132,20 @@ if [[ $(command -v conda) ]]; then
     PIP="pip install"
 else
     execute sudo apt-get install python3-dev python3-tk python3-setuptools -y
-    then sudo apt-get install python3-pip; fi
+    execute sudo apt-get install python3-pip
     PIP="sudo pip3 install --upgrade" # add -H flag to sudo if this doesn't work
 fi
 
 execute $PIP jupyter notebook
-execute $PIP jupyterlab # lab may not work, comment out if it doesn't
+execute $PIP jupyterlab
 execute $PIP python-dateutil tabulate # basic libraries
 execute $PIP matplotlib numpy scipy pandas h5py seaborn # standard scientific libraries
 execute $PIP plotly kaleido ipywidgets
 execute $PIP scikit-learn scikit-image # basic ML libraries
 # execute $PIP keras tensorflow # ML libraries. Occupy large amounts of space.
 # Also consider sage if you have no access to Mathematica. https://doc.sagemath.org/html/en/installation/binary.html 
-execute sudo jupyter labextension install @karosc/jupyterlab_dracula
-execute sudo jupyter labextension install jupyterlab-plotly
+sudo jupyter labextension install @karosc/jupyterlab_dracula
+sudo jupyter labextension install jupyterlab-plotly
 
 # JuliaLang installation
 wget https://julialang-s3.julialang.org/bin/linux/x64/1.5/julia-1.5.1-linux-x86_64.tar.gz -P ~/
