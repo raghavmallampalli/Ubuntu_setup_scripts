@@ -5,7 +5,7 @@ These scripts are largely inspired by https://github.com/rsnk96/Ubuntu-Setup-Scr
 For a list of useful commands and tips, check out [help](Help.md)
 
 ## basic
-Basic setup of Ubuntu. It installs some essential packages and their dependencies. Additionally it also installs a IDE of your choice (Sublime/Atom/VS Code). Finally it installs Python3, useful libraries in Python3 and octave.
+Basic setup of Ubuntu. It installs some essential packages and their dependencies. Additionally it also installs a IDE of your choice (Sublime/Atom/VS Code). Finally it installs miniconda3 (by choice) with python3.
 
 IMPORTANT: Bash shell is replaced by a zsh+zim configuration.
 
@@ -21,16 +21,15 @@ GUI programs I use frequently use. A number of repositories are added.
 ## command_line_utilities
 Installs CLI programs and scripts that I find useful. Clean the ~.bash_aliases file of unused aliases if you do not run this script.
 
+## sci_comp_ds.sh
+Installs scientific computing and basic data science libraries. Do not install large ML libraries in the base environment. Make a conda new environment for them, and once installation is complete, use a requirements.txt file to improve portability.
+
 ## wine_playonlinux_musicbee
 Installs WINE, PlayOnLinux and attempts to correctly install MusicBee, a Windows music player. High failure rate.
 
 ## Known bugs/failures/shortcomings:
 ### Ubuntu 20.04
-#### CLI
-* bat installation does not work
-* ripgrep does not install
 #### gui
-* vivaldi package not out
-* inkspace not out
+* Not fully tested
 #### robotics
 * ROS noetic installation not configured

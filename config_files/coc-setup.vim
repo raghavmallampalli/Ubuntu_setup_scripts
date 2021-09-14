@@ -1,16 +1,14 @@
 let g:coc_global_extensions = [
-     \'coc-snippets',
-     \'coc-vimlsp',
-     \'coc-css',
-     \'coc-html',
-     \'coc-json',
-     \'coc-tsserver',
-     \'coc-fzf-preview', 
-     \'coc-julia',
-     \'coc-jedi', 
-     \'coc-clangd'
-\]
-" Jedi for Python
+      \'coc-snippets',
+      \'coc-vimlsp',
+      \'coc-css',
+      \'coc-html',
+      \'coc-json',
+      \'coc-tsserver',
+      \'coc-fzf-preview', 
+      \'coc-julia', 
+      \'coc-python'
+      \]
 " TextEdit might fail if hidden is not set.
 set hidden
 
@@ -40,13 +38,11 @@ endif
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
-" use <tab> for trigger completion and navigate to the next complete item
 inoremap <silent><expr> <TAB>
-  \ pumvisible() ? coc#_select_confirm() :
-  \ coc#expandableOrJumpable() ?
-  \ "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-  \ <SID>check_back_space() ? "\<TAB>" :
-  \ coc#refresh()
+      \ pumvisible() ? coc#_select_confirm() :
+      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -54,21 +50,25 @@ function! s:check_back_space() abort
 endfunction
 
 let g:coc_snippet_next = '<tab>'
-let g:coc_snippet_next = '<tab>'
 
 " Make <CR> auto-select the first completion item and notify coc.nvim to
 " format on enter, <cr> could be remapped by other vim plugin
 inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
 " GoTo code navigation.
-" define
-nmap <silent> gD <Plug>(coc-definition)
+nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
-" Use gh (hover) to show documentation in preview window.
-nnoremap <silent> gh :call <SID>show_documentation()<CR>
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
@@ -85,6 +85,10 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
+
+" Formatting selected code.
+"xmap <leader>F  <Plug>(coc-format-selected)
+"nmap <leader>F  <Plug>(coc-format-selected)
 
 augroup mygroup
   autocmd!
@@ -152,14 +156,25 @@ let g:coc_snippet_prev = '<c-s-p>'
 
     
 " Work with fzf.vim and coc-fzf-preview 
+" Mug these. Super useful.
 nmap <leader>f [fzf-p]
 xmap <leader>f [fzf-p]
-nnoremap <silent> [fzf-p]f     :<c-u>CocCommand fzf-preview.DirectoryFiles<CR>
+nnoremap [fzf-p]/     :<c-u>CocCommand fzf-preview.ProjectGrep<Space>
+nnoremap <silent> [fzf-p]f     :<c-u>CocCommand fzf-preview.ProjectFiles<CR>
 nnoremap <silent> [fzf-p]a     :<c-u>CocCommand fzf-preview.DirectoryFiles /<CR>
 nnoremap <silent> [fzf-p]h     :<c-u>CocCommand fzf-preview.DirectoryFiles ~/<CR>
 nnoremap <silent> [fzf-p]gs    :<c-u>CocCommand fzf-preview.GitStatus<CR>
 nnoremap <silent> [fzf-p]ga    :<c-u>CocCommand fzf-preview.GitActions<CR>
 nnoremap <silent> [fzf-p]B     :<c-u>CocCommand fzf-preview.AllBuffers<CR>
 nnoremap <silent> [fzf-p]b     :<c-u>CocCommand fzf-preview.Buffers<CR>
+nnoremap <silent> ; :<C-u>:CocCommand fzf-preview.CommandPalette<CR>
 
-nnoremap <silent> <C-P> :<C-u>:CocCommand fzf-preview.CommandPalette<CR>
+" vim-devicons
+let g:fzf_preview_use_dev_icons = 1
+
+" devicons character width
+let g:fzf_preview_dev_icon_prefix_string_length = 3
+
+" Devicons can make fzf-preview slow when the number of results is high
+" By default icons are disable when number of results is higher that 5000
+let g:fzf_preview_dev_icons_limit = 5000
