@@ -21,9 +21,11 @@ execute () {
         exit 1
     fi
 }
-spatialPrint "Do not execute this file without reading it first and cd'ing to the parent folder of this script. If it exits without completing install run 'sudo apt --fix-broken install'."
+spatialPrint "Do not execute this file without reading it first and changing directory to the parent folder of this script. If it exits without completing install run 'sudo apt --fix-broken install'."
+echo "DO NOT RUN AS ROOT. SCRIPT WILL FAIL"
 echo "To achieve maximum usability of aliases do not remove or move the scripts after installation. If you want to move the folder, do so before starting installation. [ENTER] to continue."
 read dump
+echo "Logging installation output to /tmp/installation.log"
 # Speed up the process
 # Env Var NUMJOBS overrides automatic detection
 if [[ -n $NUMJOBS ]]; then
@@ -37,19 +39,23 @@ else
 fi
 
 # Fixes time problems if Windows is installed on your PC alongside Ubuntu
-execute timedatectl set-local-rtc 1 --adjust-system-clock
+if grep -q '[Mm]icrosoft' /proc/version; then
+    echo "Cannot access timedatectl on WSL."
+else
+    execute timedatectl set-local-rtc 1 --adjust-system-clock
+fi
 echo "Mount windows partitions at startup using 'sudo fdisk -l' and by editing /etc/fstab"
 
 execute sudo apt-get update -y
-execute sudo apt-get install build-essential curl g++ cmake cmake-curses-gui pkg-config checkinstall -y
+execute sudo apt-get install build-essential curl g++ cmake cmake-curses-gui pkg-config checkinstall automake -y
 execute sudo apt-get install libopenblas-dev liblapacke-dev libatlas-base-dev gfortran -y
 execute sudo apt-get install git wget curl xclip jq -y
 execute sudo apt-get install vim -y # vim gnome adds system clipboard functionality
 execute sudo apt-get install htop -y
 execute sudo apt-get install run-one xbindkeys xbindkeys-config wmctrl xdotool -y
-execute sudo apt-get install ruby-full
+execute sudo apt-get install ruby-full -y
 execute sudo apt-get install fonts-powerline aria2 -y
-execute gem install bundler
+execute sudo gem install bundler
 cp ./config_files/vimrc ~/.vimrc
 
 # zsh is a shell that's better than bash. zim is a framework/plugin management system for it.
@@ -63,32 +69,37 @@ fi
 rm -rf ~/.z*
 execute sudo apt-get install zsh -y
 command -v zsh | sudo tee -a /etc/shells
-sudo chsh -s "$(command -v zsh)" "${USER}"
 curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
-echo "zmodule softmoth/zsh-vim-mode" >> ~/.zimrc
 echo "Execute 'zimfw install' after terminal restart"
 # Create bash aliases and link bash and zsh aliases
 if [ -f ~/.bash_aliases ]; then
     cp -L ~/.bash_aliases ~/backup_bash_aliases
     echo "Bash aliases backed up to ~/backup_bash_aliases. Deleting."
 fi
+echo "Changing shell:"
+execute sudo chsh -s "$(command -v zsh)" "${USER}"
 cp ./config_files/bash_aliases ~/.bash_aliases
-cp ./config_files/.zshrc.local ~/.zshrc.local
-echo "source ~/.zshrc.local" >> ~/.zshrc
+[ -f ./config_files/zshrc.local ] && cp ./config_files/zshrc.local ~/.zshrc.local
+cp ./config_files/zshrc.common ~/.zshrc.common
+[ -f ./config_files/zshrc.local ] && echo "source ~/.zshrc.local" >> ~/.zshrc
+echo "source ~/.zshrc.common" >> ~/.zshrc
 cp ./config_files/Dracula.dircolors ~/
 
-# tmux set up. TEST
+# tmux set up.
 if [ -f ~/.tmux.conf ]; then
     cp -L ~/.tmux.conf ~/backup_tmux.conf
     echo ".tmux.conf backed up to ~/backup_tmux.conf. Deleting."
 fi
 # build dependencies
 execute sudo apt-get install libevent-dev ncurses-dev build-essential bison pkg-config -y
-git clone https://github.com/tmux/tmux.git ~/tmux
+rm -rf ~/tmux
+execute git clone https://github.com/tmux/tmux.git ~/tmux
 cd ~/tmux
-sh autogen.sh
-sh configure && make
+spatialPrint "Installing tmux..."
+sh autogen.sh >> /tmp/installation.log
+sh configure  >> /tmp/installation.log && make >> /tmp/installation.log
 cd -
+rm -rf ~/.tmux/plugins/tpm
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 cp ./config_files/tmux.conf ~/.tmux.conf
 echo "Press Ctrl+A I (capital I) on first run of tmux to install plugins."
@@ -113,7 +124,7 @@ elif [[ $tempvar = s ]]; then
     execute sudo apt-get install apt-transport-https -y
     execute sudo apt-get update -y
     execute sudo apt-get install sublime-text -y
-elif [[ $tempvar = q ]];then
+elif [[ $tempvar = q ]]; then
     echo "Skipping this step"
 fi
 
@@ -121,43 +132,31 @@ fi
 curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 execute sudo apt-get install -y nodejs
 
-# installing octave, python3
-execute sudo apt-get install octave -y # comment out if you have access to MATLAB. 
+# installing python 
 
-if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -lt 19 ]]; then  
-    execute sudo apt-get install python-pip -y # 20.04 does not have python-pip in repo.
+read -p "Install miniconda? [y/n] " tempvar
+if [[ $tempvar = y ]]; then
+    tempvar=${tempvar:-n}
+    if [ -d ~/miniconda3 ]; then
+        read -p "miniconda3 installed in default location directory. delete/manually enter install location/quit [d/m/Ctrl+C]: " tempvar
+        tempvar=${tempvar:-n}
+        if [[ $tempvar = d ]]; then
+            rm -rf ~/miniconda3
+        elif [[ $tempvar = m ]]; then
+            echo "Ensure that you enter a different location during installation."
+        fi
+    fi 
+    wget -q https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    chmod +x Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh
+    ~/miniconda3/bin/conda init zsh
+    rm Miniconda3-latest-Linux-x86_64.sh
 fi
-
-if [[ $(command -v conda) ]]; then
-    PIP="pip install"
-else
-    execute sudo apt-get install python3-dev python3-tk python3-setuptools -y
-    execute sudo apt-get install python3-pip
-    PIP="sudo pip3 install --upgrade" # add -H flag to sudo if this doesn't work
-fi
-
-execute $PIP jupyter notebook
-execute $PIP jupyterlab
-execute $PIP python-dateutil tabulate # basic libraries
-execute $PIP matplotlib numpy scipy pandas h5py seaborn # standard scientific libraries
-execute $PIP plotly kaleido ipywidgets
-execute $PIP scikit-learn scikit-image # basic ML libraries
-# execute $PIP keras tensorflow # ML libraries. Occupy large amounts of space.
-# Also consider sage if you have no access to Mathematica. https://doc.sagemath.org/html/en/installation/binary.html 
-sudo jupyter labextension install @karosc/jupyterlab_dracula
-sudo jupyter labextension install jupyterlab-plotly
-
-# JuliaLang installation
-wget https://julialang-s3.julialang.org/bin/linux/x64/1.5/julia-1.5.1-linux-x86_64.tar.gz -P ~/
-tar zxvf ~/julia-1.5.1-linux-x86_64.tar.gz -C ~/
-echo "export PATH=\"\$PATH:\$HOME/julia-1.5.1/bin\"" >> ~/.zshrc
-echo "To use Julia with Jupyter Notebook https://github.com/JuliaLang/IJulia.jl#quick-start"
-
-echo "Remove backup files after copying required data into new files"
 
 echo "GitHub and GitLab SSH Key addition: Follow instructions in https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
 echo "https://github.com/settings/keys for GitHub"
 echo "https://gitlab.com/profile/keys for GitLab"
 echo "Do not enter a passphrase for your GitHub ssh key."
+
 echo "Check the .bash_aliases and .zshrc files and remove any aliases/sources you do not need."
-echo "Installation completed. Restart and install other scripts. Read them first. They are not yet fully tested."
+echo "Installation completed. Restart and install other scripts."

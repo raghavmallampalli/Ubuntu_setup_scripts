@@ -1,3 +1,4 @@
+" Check if in WSL system
 function! IsWSL()
     if has("unix")
         let lines = readfile("/proc/version")
@@ -7,6 +8,7 @@ function! IsWSL()
     endif
     return 0
 endfunction
+" Toggle case
 function! TwiddleCase(str)
     if a:str ==# toupper(a:str)
         let result = tolower(a:str)
@@ -17,6 +19,8 @@ function! TwiddleCase(str)
     endif
     return result
 endfunction
+" Autoinstall vim plug (https://github.com/junegunn/vim-plug)
+" does not work well in neovim
 if has("unix") && empty(glob('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
                 \ https://raw.githubusercontent.com/
@@ -33,20 +37,20 @@ endif
 let mapleader = "," 
 nnoremap gm m
 
-" Load plugins using https://github.com/junegunn/vim-plug
-call plug#begin('~/.vim/plugged')
-if !exists('g:vscode') " Only execute if not in VS Code
+" if exists("*plug#begin")
+    " Load plugins using vim plug 
+    call plug#begin('~/.vim/plugged')
 
     " Plugins to load:
     " Auto close brackets
     Plug 'jiangmiao/auto-pairs'
-    " Repeat for plugins, dependancy for easyclip
-    Plug 'tpope/vim-repeat'
     " Aids in navigating tmux and vim with same hotkeys
     Plug 'christoomey/vim-tmux-navigator'
     " Git support
-    " Dependancy for lightline
+    " dependancy for lightline
     Plug 'tpope/vim-fugitive'
+    " git diff signs in gutter (line number column)
+    Plug 'mhinz/vim-signify'
     " Fuzzy finder for vim
     Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
     " nnn support
@@ -65,13 +69,14 @@ if !exists('g:vscode') " Only execute if not in VS Code
                 \} 
     \}
     let g:nnn#command = 'nnn -xdeH'
-    noremap <silent> <leader>nn :NnnPicker %:p:h<CR>
     " Pop up menu with registers
     Plug 'junegunn/vim-peekaboo'
     " Navigate using keyboard. See :help easymotion
     Plug 'easymotion/vim-easymotion'
     " completion engine
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    " Floating terminal
+    Plug 'voldikss/vim-floaterm'
 
     " Theme and colors
     " icon support
@@ -89,33 +94,33 @@ if !exists('g:vscode') " Only execute if not in VS Code
     Plug 'dracula/vim', { 'as': 'dracula' }
     let g:dracula_italic = 0
     Plug 'arakashic/nvim-colors-solarized', { 'for': 'markdown' }
-    colorscheme dracula
-    " set light theme for certain files
-    "autocmd FileType markdown set background=light 
-    "\| colorscheme solarized
     " Bracket colorization
     Plug 'luochen1990/rainbow'
     let g:rainbow_active = 1
-else
-    " Fork of easymotion that works in VS Code
-    Plug 'asvetliakov/vim-easymotion', {'dir': '~/.vscode_easymotion'}
-endif
+
+    " Comment support
+    Plug 'tpope/vim-commentary'
+    " Change surrounding characters of block
+    Plug 'tpope/vim-surround'
+
+    call plug#end()
+
+    " Don't call functions provided by plugins before plug#end
+    " remap comment functionality to Ctrl+/ (vim parses Ctrl+_ as Ctrl+/)
+    nmap <C-_> gcc
+    vmap <C-_> gc
+" endif
 
 " Clipboard functionality
-Plug 'svermeulen/vim-cutlass'
-nnoremap m d
-xnoremap m d
-nnoremap mm dd
-nnoremap M D
+nnoremap x "_d
+xnoremap x "_d
+" nnoremap xx "_dd
+nnoremap X "_D
 " copy/cut/paste to/from system register (clipboard)
 set clipboard+=unnamedplus
 " If it does not work on WSL try:
 " https://github.com/neovim/neovim/wiki/FAQ#how-to-use-the-windows-clipboard-from-wsl
 
-" Change surrounding characters of block
-Plug 'tpope/vim-surround'
-
-call plug#end()
 
 " This is for wraping left and right so that cursor left at the beginning of the line goes to end of the previous line
 set whichwrap+=<,>,h,l,[,]
@@ -159,62 +164,63 @@ if &diff                               " only for diff mode/vimdiff
     set diffopt=filler,context:1000000 " filler is default and inserts empty lines for sync
 endif
 
-if !exists('g:vscode')
-    " Configuration options that break VS Code
+colorscheme dracula
+" set light theme for certain files
+"autocmd FileType markdown set background=light 
+"\| colorscheme solarized
 
-    " Escape insert mode by typing jj or kk quickly
-    inoremap jj <Esc>
-    inoremap kk <Esc>
+" nnn
+noremap <silent> <leader>n :NnnPicker %:p:h<CR>
+noremap <silent> <leader>nn :NnnPicker<CR>
 
-    " Moving through wrapped lines
-    nnoremap <silent> k gk
-    nnoremap <silent> j gj
-    nnoremap <silent> 0 g0
-    nnoremap <silent> $ g$
-    onoremap <silent> j gj
-    onoremap <silent> k gk
-    
-    syntax on
-    set mouse=a
-    setlocal linebreak
-    setlocal nolist
-    setlocal display+=lastline
-    set statusline+=%F
-    " Shows line number to the left. :set nornu and :set nonu to turn off.
-    set number
-    set cursorline
-    nnoremap <esc> :noh<return><esc>
-    nnoremap <esc>^[ <esc>^[
+" Escape insert mode by typing jj or kk quickly
+inoremap jj <Esc>
+inoremap kk <Esc>
 
-    " Set indents as 4 spaces where it makes sense to
-    " Only do this part when compiled with support for autocommands.
-    if has("autocmd")
-        " Use filetype detection and file-based automatic indenting.
-        filetype plugin indent on
-        " Use actual tab chars in Makefiles.
-        autocmd FileType make set tabstop=8 shiftwidth=8 softtabstop=0 noexpandtab
-    endif
-    set tabstop=4 softtabstop=4 expandtab shiftwidth=4 smarttab
-    noremap <leader>ts :set list listchars+=tab:>-<CR>
-    noremap <leader>td :set list&<CR>
+" Moving through wrapped lines
+nnoremap <silent> k gk
+nnoremap <silent> j gj
+nnoremap <silent> 0 g0
+nnoremap <silent> $ g$
+onoremap <silent> j gj
+onoremap <silent> k gk
 
-    if has('nvim')
-        " Set cursors correctly on entering and leaving nvim
-        au VimEnter,VimResume * set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
-          \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
-          \,sm:block-blinkwait175-blinkoff150-blinkon175
-        " Try changing to blinkon0 to toggle behaviour
-        au VimLeave,VimSuspend * set guicursor=a:block-blinkon1
-    endif
-        " Source .vimrc by sourcing init.vim on save
-        autocmd! bufwritepost ~/.vimrc nested source $MYVIMRC
-else
-    " Configuration options exclusive to VS Code
-    nnoremap <silent> <C-h> <Cmd>call VSCodeNotify("workbench.action.focusLeftGroup")<CR>
-    nnoremap <silent> <C-j> <Cmd>call VSCodeNotify("workbench.action.focusBelowGroup")<CR>
-    nnoremap <silent> <C-k> <Cmd>call VSCodeNotify("workbench.action.focusAboveGroup")<CR>
-    nnoremap <silent> <C-l> <Cmd>call VSCodeNotify("workbench.action.focusRightGroup")<CR>
+syntax on
+set mouse=a
+setlocal linebreak
+setlocal nolist
+setlocal display+=lastline
+set statusline+=%F
+" Shows line number to the left. :set nornu and :set nonu to turn off.
+set number
+set cursorline
+nnoremap <esc> :noh<return><esc>
+nnoremap <esc>^[ <esc>^[
+
+" Set indents as 4 spaces where it makes sense to
+" Only do this part when compiled with support for autocommands.
+if has("autocmd")
+    " Use filetype detection and file-based automatic indenting.
+    filetype plugin indent on
+    " Use actual tab chars in Makefiles.
+    autocmd FileType make set tabstop=8 shiftwidth=8 softtabstop=0 noexpandtab
 endif
-if !exists('g:vscode')
+set tabstop=4 softtabstop=4 expandtab shiftwidth=4 smarttab
+noremap <leader>ts :set list listchars+=tab:>-<CR>
+noremap <leader>td :set list&<CR>
+
+if has('nvim')
+    " Set cursors correctly on entering and leaving nvim
+    au VimEnter,VimResume * set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+      \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
+      \,sm:block-blinkwait175-blinkoff150-blinkon175
+    " Try changing to blinkon0 to toggle behaviour
+    au VimLeave,VimSuspend * set guicursor=a:block-blinkon1
+endif
+" Source .vimrc by sourcing init.vim on save
+autocmd! bufwritepost ~/.vimrc nested source $MYVIMRC
+
+" Check if plug is installed
+if exists("*plug#begin")
     source ~/.vim/coc-setup.vim
 endif

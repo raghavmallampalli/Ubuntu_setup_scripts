@@ -1,5 +1,3 @@
-export full_scripts_path=/media/Windows/Media/code/Ubuntu_setup_scripts
-
 # config for nnn: command line file manager
 [ -n "$NNNLVL" ] && RPS1="N$NNNLVL $RPS1"
 n ()
@@ -21,7 +19,6 @@ n ()
     fi
 }
 # bookmarks
-export NNN_BMS="c:/media/Windows/Media/code/;d:$HOME/Downloads;p:/media/Windows/Media/Photo Editing/;6:/media/Windows/Media/College/Semester 6/"
 #      NNN_FCOLORS='c1e2272e006033f7c6d6abc4'
 export NNN_FCOLORS='c1e2677800609ff7c6d6abd2'
 export NNN_PLUG='d:diffs;f:fzfasd;o:fzopen;p:preview-tui;s:suedit;t:nmount;v:imgview;x:_chmod +x $nnn'
@@ -33,6 +30,10 @@ if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
         source /etc/profile.d/vte.sh
 fi
 
+# fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_COMMAND='ag --hidden -p ~/.gitignore -g ""'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # fzf-fasd integration
 j () {
     fasdlist=$( fasd -d -l -r $1 | \
@@ -49,13 +50,6 @@ v () {
 }
 
 bindkey -v
-if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
-	# Speeds up tab autocompletion by reducing size of PATH variable
-	# If you install Windows programmes that interact with WSL,
-	# Comment out this line and add directories accordingly
-	export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/bin:$HOME/.cargo/bin:/mnt/c/Program\ Files/Docker/Docker/resources/bin:/mnt/c/ProgramData/DockerDesktop/version-bin:/mnt/c/Users/Raghav\ Mallampalli/AppData/Local/Programs/Microsoft\ VS\ Code\ Insiders/bin:/mnt/c/Users/Raghav\ Mallampalli/AppData/Local/Programs/Microsoft\ VS\ Code/bin
-fi
-
 if [ -f ~/.bash_aliases ]; then
   source ~/.bash_aliases
 fi
@@ -84,11 +78,7 @@ eval "$(dircolors $HOME/Dracula.dircolors)"
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
-export PATH="/media/Windows/Media/code/julia-1.5.3/bin:$PATH"
-
-# GULP
-export PATH="/media/Windows/Media/code/gulp-6.0/Src:$PATH"
-
+export PATH="$HOME/julia-1.6.2/bin:$PATH"
 # CUDA
 export PATH=/usr/local/cuda-11.0/bin${PATH:+:${PATH}}
 
@@ -102,23 +92,27 @@ fi
 source "$fasd_cache" 2>/dev/null
 unset fasd_cache
 
+# Customising prompt: powerlevel10k
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
 ############################################
 # automatically attaches 'General' or 'General-Minimal' if it exists and is not attached.
 # Creates if it does not.
- if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
-	Session="General-Minimal"
-else
-	Session="General"
-fi
-if [[ -z ${TERM_PROGRAM} && -z ${TMUX} ]]; then
-	tmux ls 2>/dev/null | grep $Session >/dev/null
-	if [ $? -eq 0 ]; then
-		tmux ls | grep $Session | grep 'attached' >/dev/null
-		if [ $? -eq 1 ]; then
-			tmux -u attach -t $Session
-		fi
-	else
-		tgex # Or tsimp 
-	fi
-fi
+#if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
+#	Session="General-Minimal"
+#else
+#	Session="General"
+#fi
+#if [[ -z ${TERM_PROGRAM} && -z ${TMUX} ]]; then
+#	tmux ls 2>/dev/null | grep $Session >/dev/null
+#	if [ $? -eq 0 ]; then
+#		tmux ls | grep $Session | grep 'attached' >/dev/null
+#		if [ $? -eq 1 ]; then
+#			tmux -u attach -t $Session
+#		fi
+#	else
+#		tgex # Or tsimp 
+#	fi
+#fi
 ###########################################
