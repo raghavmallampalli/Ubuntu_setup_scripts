@@ -69,15 +69,15 @@ fi
 rm -rf ~/.z*
 execute sudo apt-get install zsh -y
 command -v zsh | sudo tee -a /etc/shells
-curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
-echo "Execute 'zimfw install' after terminal restart"
+# Install Oh-my-zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 # Create bash aliases and link bash and zsh aliases
 if [ -f ~/.bash_aliases ]; then
     cp -L ~/.bash_aliases ~/backup_bash_aliases
     echo "Bash aliases backed up to ~/backup_bash_aliases. Deleting."
 fi
-echo "Changing shell:"
-execute sudo chsh -s "$(command -v zsh)" "${USER}"
+# echo "Changing shell:"
+# sudo chsh -s "$(command -v zsh)" "${USER}"
 cp ./config_files/bash_aliases ~/.bash_aliases
 [ -f ./config_files/zshrc.local ] && cp ./config_files/zshrc.local ~/.zshrc.local
 cp ./config_files/zshrc.common ~/.zshrc.common
@@ -93,12 +93,13 @@ fi
 # build dependencies
 execute sudo apt-get install libevent-dev ncurses-dev build-essential bison pkg-config -y
 rm -rf ~/tmux
-execute git clone https://github.com/tmux/tmux.git ~/tmux
-cd ~/tmux
+# execute git clone https://github.com/tmux/tmux.git ~/tmux
+# cd ~/tmux
 spatialPrint "Installing tmux..."
-sh autogen.sh >> /tmp/installation.log
-sh configure  >> /tmp/installation.log && make >> /tmp/installation.log
-cd -
+execute sudo apt-get install tmux -y
+# sh autogen.sh >> /tmp/installation.log
+# sh configure  >> /tmp/installation.log && make >> /tmp/installation.log
+# cd -
 rm -rf ~/.tmux/plugins/tpm
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 cp ./config_files/tmux.conf ~/.tmux.conf
@@ -133,7 +134,6 @@ curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 execute sudo apt-get install -y nodejs
 
 # installing python 
-
 read -p "Install miniconda? [y/n] " tempvar
 if [[ $tempvar = y ]]; then
     tempvar=${tempvar:-n}

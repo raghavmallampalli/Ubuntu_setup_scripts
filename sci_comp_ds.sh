@@ -56,7 +56,7 @@ execute $PIP jupyter notebook
 execute $PIP jupyterlab
 execute $PIP python-dateutil tabulate # basic libraries
 execute $PIP matplotlib numpy scipy pandas h5py seaborn # standard scientific libraries
-execute $PIP plotly kaleido ipywidgets
+execute $PIP plotly kaleido ipywidgets pyforest
 execute $PIP scikit-learn scikit-image # basic ML libraries
 # execute $PIP keras tensorflow # ML libraries. Occupy large amounts of space.
 echo "To use Julia with Jupyter Notebook https://github.com/JuliaLang/IJulia.jl#quick-start"

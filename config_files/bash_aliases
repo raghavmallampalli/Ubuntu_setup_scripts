@@ -17,6 +17,8 @@ alias printpath="echo \$PATH | sed 's/\\:/\\n/g'"
 alias jn="jupyter notebook"
 alias jl="jupyter lab"
 
+alias cat='batcat -p'
+alias bat='batcat'
 alias aria="aria2c --file-allocation=none -c -x 10 -s 10"
 alias ytdla="youtube-dl -f 140 --add-metadata --metadata-from-title \"%(artist)s - %(title)s\" -o \"%(title)s.%(ext)s\""
 alias ytdlv="youtube-dl -f 'bestvideo[height<=720]+bestaudio/best[height<=720]' --write-sub"
@@ -30,7 +32,6 @@ alias fzfupdate='cd ~/.fzf && git pull && ./install && cd -'
 alias bashtop='~/.bashtop/bashtop'
 alias fzp="fzf-tmux --preview 'bat --style=numbers --color=always {} | head -500'"
 alias fzf="fzf-tmux"
-alias cat='bat -p'
 
 # git aliases
 alias gpom="git push origin master"

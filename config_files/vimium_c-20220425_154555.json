@@ -1,0 +1,118 @@
+{
+	"name": "Vimium C",
+	"@time": "4/25/2022, 3:45:55 PM",
+	"time": 1650881755491,
+	"environment": {
+		"extension": "1.98.0",
+		"platform": "win",
+		"chrome": "100"
+	},
+	"autoDarkMode": 0,
+	"exclusionRules": [
+		{
+			"passKeys": "",
+			"pattern": "^https?://127\\.0\\.0\\.1"
+		},
+		{
+			"passKeys": "",
+			"pattern": "^https?://192\\.168\\.1\\.10:8080/"
+		},
+		{
+			"passKeys": "/ ",
+			"pattern": ":https://github.com/"
+		},
+		{
+			"passKeys": "",
+			"pattern": ":https://docs.google.com/"
+		},
+		{
+			"passKeys": "",
+			"pattern": ":https://mail.google.com/"
+		},
+		{
+			"passKeys": "",
+			"pattern": ":https://colab.research.google.com/"
+		},
+		{
+			"passKeys": "/ ",
+			"pattern": ":https://www.google.com/"
+		},
+		{
+			"passKeys": "[ ] i ",
+			"pattern": ":https://youtube.googleapis.com/"
+		},
+		{
+			"passKeys": "",
+			"pattern": ":https://youtube.googleapis.com/"
+		},
+		{
+			"passKeys": "",
+			"pattern": ":https://www.openvim.com/"
+		},
+		{
+			"passKeys": "",
+			"pattern": ":https://web.whatsapp.com/"
+		},
+		{
+			"passKeys": "<space> [ ] i ",
+			"pattern": ":https://www.youtube.com/"
+		},
+		{
+			"passKeys": "/ ",
+			"pattern": "^https?://mallampalli\\.in:2082/"
+		},
+		{
+			"passKeys": "",
+			"pattern": "^https?://localhost"
+		},
+		{
+			"passKeys": "",
+			"pattern": "^https?://localhost:8888/"
+		},
+		{
+			"passKeys": "",
+			"pattern": ":https://kkb-production.jupyter-proxy.kaggle.net/"
+		}
+	],
+	"ignoreCapsLock": 1,
+	"keyMappings": [
+		"#!no-check",
+		"# Insert your preferred key mappings here.",
+		"",
+		"unmap f",
+		"unmap F",
+		"unmap yf",
+		"unmap o",
+		"unmap <f8>",
+		"",
+		"map a enterInsertMode",
+		"map A enterInsertMode",
+		"map I enterInsertMode",
+		"map s LinkHints.activate",
+		"map S LinkHints.activateOpenInNewForegroundTab",
+		"map ys LinkHints.activateCopyLinkUrl",
+		"map o Vomnibar.activateInNewTab",
+		"map <c-f> enterFindMode",
+		""
+	],
+	"linkHintCharacters": "qwertasdfgzxcvb",
+	"userDefinedCss": [
+		"/* #omni */",
+		".dracula #bar{background:#44475a;}",
+		".dracula #input{background:#282a36; color:#f8f8f2;}",
+		".dracula #list{background:#282a36;}",
+		".dracula #list a{color:#6272a4;}",
+		".dracula .title{color:#f8f8f2;}",
+		"/* find */",
+		".dracula .HUD:after{background:#44475a;}",
+		""
+	],
+	"vimSync": true,
+	"vomnibarOptions": {
+		"actions": "",
+		"maxMatches": 10,
+		"queryInterval": 333,
+		"sizes": "77,3,44",
+		"styles": "dark dracula"
+	}
+}
