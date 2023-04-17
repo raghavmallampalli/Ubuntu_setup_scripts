@@ -6,8 +6,9 @@ alias la='n'
 alias gettime='sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d" " -f5-8)Z";'
 alias list-repos="apt-cache policy |grep http |awk '{print $2 $3}' |sort -u"
 alias xo="xdg-open"
-alias vim="nvim -O" # open multiple files as vertical splits
-alias vimdiff='nvim -d'
+# alias vim="nvim -O" # open multiple files as vertical splits
+# alias vimdiff='nvim -d'
+alias vimdiff='vim -d'
 alias extract='atool --extract'
 alias compress='atool --add'
 alias egrep='egrep --color=auto'
@@ -17,46 +18,32 @@ alias printpath="echo \$PATH | sed 's/\\:/\\n/g'"
 alias jn="jupyter notebook"
 alias jl="jupyter lab"
 
-alias cat='batcat -p'
-alias bat='batcat'
+alias cat='bat -p'
 alias aria="aria2c --file-allocation=none -c -x 10 -s 10"
 alias ytdla="youtube-dl -f 140 --add-metadata --metadata-from-title \"%(artist)s - %(title)s\" -o \"%(title)s.%(ext)s\""
 alias ytdlv="youtube-dl -f 'bestvideo[height<=720]+bestaudio/best[height<=720]' --write-sub"
-alias ytsd="$full_scripts_path/config_files/yt-search-dl.sh"
-alias rn=". ranger"
 alias qcd="cd"
-alias onedrives='onedrive --synchronize'
-alias startup='onedrive --synchronize; update'
-alias calibreupdate='sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin' # url as of 12th April 2020
 alias fzfupdate='cd ~/.fzf && git pull && ./install && cd -'
 alias bashtop='~/.bashtop/bashtop'
 alias fzp="fzf-tmux --preview 'bat --style=numbers --color=always {} | head -500'"
 alias fzf="fzf-tmux"
+
+# fasd aliases: see ~/.fasd-init-zsh for full list
+alias cz='fasd_cd -d'
+alias o='a -e xdg-open' # quick opening files with xdg-open
+alias c='fasd -ia -e code' # quick opening files with xdg-open
 
 # git aliases
 alias gpom="git push origin master"
 alias ggr="git log --all --decorate --oneline --graph"
 alias lsg="git ls-files"
 
-# docker aliases
-alias dr='docker run -it'
-alias drd='docker run -d'
-alias dsta='docker start'
-alias dsto='docker stop'
-alias dia='docker images -a'
-alias dps='docker ps -a'
-alias dcpr='docker container prune'
-alias dipr='docker image prune'
-alias dirm='docker image rm'
-alias dport='docker port'
-
 # tmux aliases
 alias ta="tmux -u attach"
 alias tgex="tmux -u new-session -s General \; \
-        split-window -h \; \
-            send-keys ' n' C-m \; \
-            swap-pane -U\; \
-            selectp -R \; \
+        split-window -v \; \
+            send-keys ' python' C-m \; \
+            selectp -U \; \
             rename-window 'general' \; \
         neww \; \
             send-keys ' htop' C-m \; \
@@ -103,14 +90,12 @@ alias tsetux="tmux -u new-session -s 'Setup'\; \
             send-keys ' vimdiff ~/.config/ranger/commands.py $full_scripts_path/config_files/commands.py' C-m \; \
             rename-window 'rn commands' \; \
         select-window -l"  # edit setup scripts.
+
 # WSL compatibility commands
 alias clip.exe='/mnt/c/Windows/System32/clip.exe'
 alias explorer.exe='/mnt/c/Windows/explorer.exe'
-# fasd aliases: see ~/.fasd-init-zsh for full list
-alias cz='fasd_cd -d'
-#alias v='f -e nvim' # quick opening files with nvim
-alias o='a -e xdg-open' # quick opening files with xdg-open
-alias c='fasd -ia -e code' # quick opening files with xdg-open
+
 
 # Web development
-alias jb="bundle exec jekyll build && rsync -avz -e 'ssh -i ~/.ssh/mallampalli_rsa' /home/raghav/code/raghav-mallampalli-site/_site/ mallampalli@mallampalli.in://home/mallampalli/public_html/raghav/"
+# enter code folder path and remote folder path in sequence, include the trailing slash in both
+alias jb="bundle exec jekyll build && rsync -avz"

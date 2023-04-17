@@ -8,6 +8,7 @@ function! IsWSL()
     endif
     return 0
 endfunction
+
 " Toggle case
 function! TwiddleCase(str)
     if a:str ==# toupper(a:str)
@@ -19,14 +20,15 @@ function! TwiddleCase(str)
     endif
     return result
 endfunction
+
 " Autoinstall vim plug (https://github.com/junegunn/vim-plug)
-" does not work well in neovim
 if has("unix") && empty(glob('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
                 \ https://raw.githubusercontent.com/
                 \junegunn/vim-plug/master/plug.vim
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+
 " Enabling 256 colors for vim
 if has('termguicolors')
     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
@@ -37,79 +39,59 @@ endif
 let mapleader = "," 
 nnoremap gm m
 
-" if exists("*plug#begin")
-    " Load plugins using vim plug 
-    call plug#begin('~/.vim/plugged')
+" Load plugins using vim plug 
+call plug#begin('~/.vim/plugged')
 
-    " Plugins to load:
-    " Auto close brackets
-    Plug 'jiangmiao/auto-pairs'
-    " Aids in navigating tmux and vim with same hotkeys
-    Plug 'christoomey/vim-tmux-navigator'
-    " Git support
-    " dependancy for lightline
-    Plug 'tpope/vim-fugitive'
-    " git diff signs in gutter (line number column)
-    Plug 'mhinz/vim-signify'
-    " Fuzzy finder for vim
-    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-    " nnn support
-    Plug 'mcchrish/nnn.vim'
-    let g:nnn#action = {
-        \ '<c-t>': 'tab split',
-        \ '<c-x>': 'split',
-        \ '<c-v>': 'vsplit' 
-    \}
-    let g:nnn#set_default_mappings = 0
-    let g:nnn#layout = { 
-                \'window': { 
-                    \'width': 0.9, 
-                    \'height': 0.6, 
-                    \'highlight': 'Debug' 
-                \} 
-    \}
-    let g:nnn#command = 'nnn -xdeH'
-    " Pop up menu with registers
-    Plug 'junegunn/vim-peekaboo'
-    " Navigate using keyboard. See :help easymotion
-    Plug 'easymotion/vim-easymotion'
-    " completion engine
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}
-    " Floating terminal
-    Plug 'voldikss/vim-floaterm'
+" Plugins to load:
+" Auto close brackets
+Plug 'jiangmiao/auto-pairs'
+" Aids in navigating tmux and vim with same hotkeys
+Plug 'christoomey/vim-tmux-navigator'
+" Git support
+" dependancy for lightline
+Plug 'tpope/vim-fugitive'
+" git diff signs in gutter (line number column)
+Plug 'mhinz/vim-signify'
+" Fuzzy finder for vim
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+" Pop up menu with registers
+Plug 'junegunn/vim-peekaboo'
+" Navigate using keyboard. See :help easymotion
+Plug 'easymotion/vim-easymotion'
+" Command line file navigator
+Plug 'ptzz/lf.vim'
+" Floating terminal
+Plug 'voldikss/vim-floaterm'
 
-    " Theme and colors
-    " icon support
-    Plug 'ryanoasis/vim-devicons'
-    let g:fzf_preview_use_dev_icons = 1
-    " devicons character width
-    let g:fzf_preview_dev_icon_prefix_string_length = 3
-    " Devicons can make fzf-preview slow when the number of results is high.
-    " By default icons are disabled when number of results is higher that 1000
-    let g:fzf_preview_dev_icons_limit = 1000
-    let g:airline_powerline_fonts = 1
-    Plug 'vim-airline/vim-airline'
-    let g:airline#extensions#tabline#enabled = 1
-    " Dracula theme
-    Plug 'dracula/vim', { 'as': 'dracula' }
-    let g:dracula_italic = 0
-    Plug 'arakashic/nvim-colors-solarized', { 'for': 'markdown' }
-    " Bracket colorization
-    Plug 'luochen1990/rainbow'
-    let g:rainbow_active = 1
+" Theme and colors
+" icon support
+Plug 'ryanoasis/vim-devicons'
+let g:fzf_preview_use_dev_icons = 1
+" devicons character width
+let g:fzf_preview_dev_icon_prefix_string_length = 3
+" Devicons can make fzf-preview slow when the number of results is high.
+" By default icons are disabled when number of results is higher that 1000
+let g:fzf_preview_dev_icons_limit = 1000
+let g:airline_powerline_fonts = 1
+Plug 'vim-airline/vim-airline'
+let g:airline#extensions#tabline#enabled = 1
+" Dracula theme
+Plug 'dracula/vim', { 'as': 'dracula' }
+let g:dracula_italic = 0
+" Bracket colorization
+Plug 'luochen1990/rainbow'
+let g:rainbow_active = 1
 
-    " Comment support
-    Plug 'tpope/vim-commentary'
-    " Change surrounding characters of block
-    Plug 'tpope/vim-surround'
+" Comment support
+Plug 'tpope/vim-commentary'
+" Change surrounding characters of block
+Plug 'tpope/vim-surround'
+call plug#end()
 
-    call plug#end()
-
-    " Don't call functions provided by plugins before plug#end
-    " remap comment functionality to Ctrl+/ (vim parses Ctrl+_ as Ctrl+/)
-    nmap <C-_> gcc
-    vmap <C-_> gc
-" endif
+" Don't call functions provided by plugins before plug#end
+" remap comment functionality to Ctrl+/ (vim parses Ctrl+_ as Ctrl+/)
+nmap <C-_> gcc
+vmap <C-_> gc
 
 " Clipboard functionality
 nnoremap x "_d
@@ -117,7 +99,18 @@ xnoremap x "_d
 " nnoremap xx "_dd
 nnoremap X "_D
 " copy/cut/paste to/from system register (clipboard)
+" WSL yank support
+let s:clip = '/mnt/c/Windows/System32/clip.exe'  " change this path according to your mount point
+if executable(s:clip)
+    augroup WSLYank
+        autocmd!
+        autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
+    augroup END
+endif
 set clipboard+=unnamedplus
+" Clipboard does not work well in WSL. Copy works using above syntax
+" Turn on paste mode and paste text
+set pastetoggle=<F3>
 " If it does not work on WSL try:
 " https://github.com/neovim/neovim/wiki/FAQ#how-to-use-the-windows-clipboard-from-wsl
 
@@ -169,10 +162,6 @@ colorscheme dracula
 "autocmd FileType markdown set background=light 
 "\| colorscheme solarized
 
-" nnn
-noremap <silent> <leader>n :NnnPicker %:p:h<CR>
-noremap <silent> <leader>nn :NnnPicker<CR>
-
 " Escape insert mode by typing jj or kk quickly
 inoremap jj <Esc>
 inoremap kk <Esc>
@@ -208,19 +197,3 @@ endif
 set tabstop=4 softtabstop=4 expandtab shiftwidth=4 smarttab
 noremap <leader>ts :set list listchars+=tab:>-<CR>
 noremap <leader>td :set list&<CR>
-
-if has('nvim')
-    " Set cursors correctly on entering and leaving nvim
-    au VimEnter,VimResume * set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
-      \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
-      \,sm:block-blinkwait175-blinkoff150-blinkon175
-    " Try changing to blinkon0 to toggle behaviour
-    au VimLeave,VimSuspend * set guicursor=a:block-blinkon1
-endif
-" Source .vimrc by sourcing init.vim on save
-autocmd! bufwritepost ~/.vimrc nested source $MYVIMRC
-
-" Check if plug is installed
-if exists("*plug#begin")
-    source ~/.vim/coc-setup.vim
-endif

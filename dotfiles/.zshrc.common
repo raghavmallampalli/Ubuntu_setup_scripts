@@ -1,0 +1,94 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# fzf
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/.fzf-git.sh ] && source ~/.fzf-git.sh
+
+# fasd
+fasd_cache="$HOME/.fasd-init-zsh"
+if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
+	fasd --init posix-alias zsh-hook zsh-ccomp zsh-ccomp-install >| "$fasd_cache"
+fi
+source "$fasd_cache" 2>/dev/null
+unset fasd_cache
+
+# Change directory with lf
+cl () {
+    tmp="$(mktemp)"
+    lf -last-dir-path="$tmp" "$@"
+    if [ -f "$tmp" ]; then
+        dir="$(cat "$tmp")"
+        rm -f "$tmp"
+        if [ -d "$dir" ]; then
+            if [ "$dir" != "$(pwd)" ]; then
+                cd "$dir"
+            fi
+        fi
+    fi
+}
+
+# fzf-fasd integration
+j () {
+    fasdlist=$( fasd -d -l -r $1 | \
+      fzf --query="$1 " --select-1 --exit-0 --height=25% --reverse --tac --no-sort --cycle) &&
+    cd "$fasdlist"
+}
+v () {
+    export fasdlist=$( fasd -f -l -r $1 | \
+        fzf --query="$1 " --select-1 --exit-0 --height=25% --reverse --tac --no-sort --cycle)
+    echo "Opening $fasdlist. Press any key to continue."
+    # Do not remove this line nvim opens with artefacts without it.
+    read dump
+    vim -O "$fasdlist"
+}
+
+bindkey -v
+if [ -f ~/.aliases ]; then
+  source ~/.aliases
+fi
+setopt nonomatch # allows globbing (name* matching in apt, ls etc.), use with caution
+[[ -a /etc/zsh_command_not_found ]] && . /etc/zsh_command_not_found
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_SPACE
+
+# vi at terminal
+bindkey 'jj' vi-cmd-mode
+bindkey 'jk' vi-cmd-mode
+bindkey 'kk' vi-cmd-mode
+autoload edit-command-line; zle -N edit-command-line
+bindkey -M vicmd V edit-command-line
+
+# bat configuration
+export BAT_THEME="Dracula"
+export BAT_PAGER="less -FRX"
+
+# Customising prompt: powerlevel10k
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+############################################
+# tmux auto attach
+# automatically attaches 'General' or 'General-Minimal' if it exists and is not attached.
+# Creates if it does not.
+if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
+	Session="General-Minimal"
+else
+	Session="General"
+fi
+if [[ -z ${TERM_PROGRAM} && -z ${TMUX} ]]; then
+	tmux ls 2>/dev/null | grep $Session >/dev/null
+	if [ $? -eq 0 ]; then
+		tmux ls | grep $Session | grep 'attached' >/dev/null
+		if [ $? -eq 1 ]; then
+			tmux -u attach -t $Session
+		fi
+	else
+		tgex # Or tsimp 
+	fi
+fi
+###########################################

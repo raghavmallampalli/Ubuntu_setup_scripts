@@ -24,6 +24,29 @@ execute () {
 echo "Proceed if you have run basic.sh, changed directory to the parent folder of this script and gone through this sh file. Also make sure you know how to delete added repositories. Ctrl+C and do so first if not. [ENTER] to continue."
 read dump
 
+# IDE Install code editor of your choice
+read -p "Download and Install VS Code Insiders / Atom / Sublime. Press q to skip this. Default: Skip Editor installation [v/a/s/q]: " tempvar
+tempvar=${tempvar:-q}
+if [[ $tempvar = v ]]; then
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+    sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
+    sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+    execute sudo apt-get install apt-transport-https -y
+    execute sudo apt-get update -y
+    execute sudo apt-get install code -y # or code insiders
+    execute rm microsoft.gpg
+elif [[ $tempvar = a ]]; then
+    execute sudo add-apt-repository ppa:webupd8team/atom
+    execute sudo apt-get update -y; execute sudo apt-get install atom -y
+elif [[ $tempvar = s ]]; then
+    wget -q -O - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
+    echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+    execute sudo apt-get install apt-transport-https -y
+    execute sudo apt-get update -y
+    execute sudo apt-get install sublime-text -y
+elif [[ $tempvar = q ]]; then
+    echo "Skipping this step"
+fi
 
 spatialPrint "Tweaks, fonts, themes and extensions"
 
@@ -40,9 +63,6 @@ git clone https://github.com/dracula/gtk ~/.themes/Dracula
 gsettings set org.gnome.desktop.interface gtk-theme "Dracula"
 gsettings set org.gnome.desktop.wm.preferences theme "Dracula"
 sudo jupyter labextension install @karosc/jupyterlab_dracula
-
-execute sudo cp ./config_files/images_numix.zip /usr/lib/libreoffice/share/config/ # change theme from libreoffice settings
-
 
 if [[ $(cat /etc/os-release | grep "VERSION_ID" | grep -o -E '[0-9][0-9]' | head -n 1) -lt 19 ]]; then
     sudo add-apt-repository ppa:papirus/papirus

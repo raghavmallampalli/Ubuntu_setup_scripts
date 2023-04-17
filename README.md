@@ -4,22 +4,19 @@ These scripts are largely inspired by https://github.com/rsnk96/Ubuntu-Setup-Scr
 
 For a list of useful commands and tips, check out [help](Help.md)
 
-## basic
-Basic setup of Ubuntu. It installs some essential packages and their dependencies. Additionally it also installs a IDE of your choice (Sublime/Atom/VS Code). Finally it installs miniconda3 (by choice) with python3.
+## commandline
+Basic setup of Ubuntu. It installs some essential packages and their dependencies. It also installs some command line utilites. Finally it installs miniconda3 (by choice) with python3.
 
-IMPORTANT: Bash shell is replaced by a zsh+zim configuration.
+IMPORTANT: Bash shell is replaced by a zsh+Oh-My-Zsh configuration.
 
-## gui_aesthetics
-GUI programs I use frequently use. A number of repositories are added.
+## gui
+GUI programs I use frequently use. A number of repositories are added. Installs a IDE of your choice (Sublime/Atom/VS Code).
 ### Setting up SimpleScreenRecorder:
 * Add to startup applications:  simplescreenrecorder --start-hidden
 * Configure SSR as below
 
  ![Page 1 of setup](config_files/ssr_1.png?raw=true "Screenshot 1")
  ![Page 2 of setup](config_files/ssr_2.png?raw=true "Screenshot 2")
-
-## command_line_utilities
-Installs CLI programs and scripts that I find useful. Clean the ~.bash_aliases file of unused aliases if you do not run this script.
 
 ## sci_comp_ds.sh
 Installs scientific computing and basic data science libraries. Do not install large ML libraries in the base environment. Make a conda new environment for them, and once installation is complete, use a requirements.txt file to improve portability.

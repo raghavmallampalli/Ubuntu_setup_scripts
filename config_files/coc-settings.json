@@ -1,7 +1,0 @@
-
-{
-    "diagnostic.checkCurrentLine": true,
-    "coc.preferences.hoverTarget": "float",
-    "suggest.floatEnable":true,
-    "suggest.removeDuplicateItems": true
-}
