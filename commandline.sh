@@ -22,41 +22,32 @@ execute () {
     fi
 }
 
-# Backup the file to /tmp and delete it
-backup_and_delete() {
+# Backup the file to /tmp, delete it and create symlink
+backup_and_replace() {
   # check if the file exists and is a regular file
-  if [ ! -e "$1" ]; then
-    echo "$1 does not exist"
-    return 0
-  fi
-
-  if [ ! -f "$1" ]; then
-    echo "$1 is a symbolic link. Deleting."
+  if [[ -e "$1" || -L "$1" ]]; then
+    # copy the file to /tmp with the same name
+    cp -L "$1" "/tmp/$(basename $1)"
+    echo "$1 exists or is a symbolic link. Deleting."
+    # check if the copy was successful
+    if [ $? -eq 0 ]; then
+        echo "Copied $1 to /tmp/$(basename $1)"
+    else
+        echo "Failed to copy $1 to /tmp/$(basename $1)"
+        return 3
+    fi
+    # delete the original file
     rm "$1"
-    return 0
+    # check if the deletion was successful
+    if [ $? -eq 0 ]; then
+        echo "Deleted $1"
+    else
+        echo "Failed to delete $1"
+        return 4
+    fi
   fi
 
-  # copy the file to /tmp with the same name
-  cp -L "$1" "/tmp/$(basename $1)"
-
-  # check if the copy was successful
-  if [ $? -eq 0 ]; then
-    echo "Copied $1 to /tmp/$(basename $1)"
-  else
-    echo "Failed to copy $1 to /tmp/$(basename $1)"
-    return 3
-  fi
-
-  # delete the original file
-  rm "$1"
-
-  # check if the deletion was successful
-  if [ $? -eq 0 ]; then
-    echo "Deleted $1"
-  else
-    echo "Failed to delete $1"
-    return 4
-  fi
+  ln -s $(pwd)/dotfiles/$(basename $1) ~/$(basename $1)
 }
 
 # Speed up the process
@@ -138,15 +129,12 @@ fi
 
 if [[ $REPLACE_DOTFILES = y ]]; then
 
-    execute backup_and_delete ~/.aliases
-    execute backup_and_delete ~/.env_vars
-    execute backup_and_delete ~/.tmux.conf
-    execute backup_and_delete ~/.vimrc
-    cp ./dotfiles/.aliases ~/.aliases
-    cp ./dotfiles/.env_vars ~/.env_vars
-    cp ./dotfiles/.tmux.conf ~/.tmux.conf
-    cp ./dotfiles/.vimrc ~/.vimrc
-    cp ./dotfiles/.p10k.zsh ~/.p10k.zsh
+    execute backup_and_replace ~/.aliases
+    execute backup_and_replace ~/.env_vars
+    execute backup_and_replace ~/.sources
+    execute backup_and_replace ~/.tmux.conf
+    execute backup_and_replace ~/.vimrc
+    execute backup_and_replace ~/.p10k.zsh
 fi
 
 ########################################### ENVIRONMENT ###########################################
@@ -158,13 +146,11 @@ if [[ $HAS_SUDO = y ]]; then
 fi
 
 if [ -x "$(command -v zsh)"  ]; then
-    execute backup_and_delete ~/.zshrc.common
-    cp ./dotfiles/.zshrc.common ~/.zshrc.common
+    execute backup_and_replace ~/.zshrc.common
 
     spatialPrint "Setting up Oh-My-Zsh"
     echo "Fill in options according to preference and exit zsh once it loads."
     sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
-    echo 'source ~/.env_vars' | cat - ~/.zshrc > temp && mv temp ~/.zshrc
     echo 'source ~/.zshrc.common' | cat - ~/.zshrc > temp && mv temp ~/.zshrc
     echo "Installed Oh-My-Zsh."
 
@@ -173,10 +159,10 @@ if [ -x "$(command -v zsh)"  ]; then
     git clone --quiet https://github.com/conda-incubator/conda-zsh-completion.git ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/conda-zsh-completion > /tmp/installation.log
     git clone --quiet https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions > /tmp/installation.log
     sed -i 's|ZSH_THEME=.*|ZSH_THEME="powerlevel10k/powerlevel10k"|' ~/.zshrc
-    sed -i 's|plugins=.*|plugins=(git dotenv conda-zsh-completion zsh-autosuggestions)|' ~/.zshrc
+    sed -i 's|plugins=.*|plugins=(git dotenv conda-zsh-completion dirhistory zsh-autosuggestions)|' ~/.zshrc
     sed -i 's|source $ZSH/oh-my-zsh.sh.*|source $ZSH/oh-my-zsh.sh; autoload -U compinit && compinit|' ~/.zshrc
 else
-    execute backup_and_delete ~/.bashrc.common
+    execute backup_and_replace ~/.bashrc.common
     cp ./dotfiles/.bashrc.common ~/.bashrc.common
 
     echo 'source ~/.env_vars' | cat - ~/.bashrc > temp && mv temp ~/.bashrc
