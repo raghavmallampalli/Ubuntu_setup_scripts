@@ -23,8 +23,10 @@ alias aria="aria2c --file-allocation=none -c -x 10 -s 10"
 alias ytdla="youtube-dl -f 140 --add-metadata --metadata-from-title \"%(artist)s - %(title)s\" -o \"%(title)s.%(ext)s\""
 alias ytdlv="youtube-dl -f 'bestvideo[height<=720]+bestaudio/best[height<=720]' --write-sub"
 alias qcd="cd"
-alias fzfupdate='cd ~/.fzf && git pull && ./install && cd -'
 alias bashtop='~/.bashtop/bashtop'
+
+# fzf aliases
+alias fzfupdate='cd ~/.fzf && git pull && ./install && cd -'
 alias fzp="fzf-tmux --preview 'bat --style=numbers --color=always {} | head -500'"
 alias fzf="fzf-tmux"
 
@@ -33,6 +35,7 @@ alias cz='fasd_cd -d'
 alias o='a -e xdg-open' # quick opening files with xdg-open
 alias c='fasd -ia -e code' # quick opening files with xdg-open
 
+
 # git aliases
 alias gpom="git push origin master"
 alias ggr="git log --all --decorate --oneline --graph"
@@ -40,61 +43,21 @@ alias lsg="git ls-files"
 
 # tmux aliases
 alias ta="tmux -u attach"
-alias tgex="tmux -u new-session -s General \; \
-        split-window -v \; \
-            send-keys ' python' C-m \; \
-            selectp -U \; \
-            rename-window 'general' \; \
-        neww \; \
-            send-keys ' htop' C-m \; \
-            split-window -h \; \
-            send-keys ' watch sensors' C-m \; \
-            split-window -v \; \
-            send-keys 'watch df' C-m \; \
-            rename-window 'performance' \; \
-        select-window -t 1 \; \
-        resize-pane -t 1 -x 30"
-alias tsimp="tmux -u new-session -s General-Minimal \; \
-        split-window -h \; \
-            send-keys ' n' C-m \; \
-            swap-pane -D\; \
-            resize-pane -x 20\; \
-            selectp -R \; \
-            rename-window 'general' \; \
-        select-window -l" # set as default for WSL
-alias trox="tmux -u new-session -s ROS\; \
-        neww \; \
-            send-keys ' roscore' C-m \; \
-            split-window -h \; \
-            send-keys ' htop' C-m \; \
-            split-window -v \; \
-            send-keys ' watch sensors' C-m \; \
-            rename-window 'performance' \; \
-        select-window -l" #ROS
-alias tsetux="tmux -u new-session -s 'Setup'\; \
-            send-keys ' vimdiff ~/.vimrc $full_scripts_path/config_files/vimrc' C-m  \; \
-            rename-window 'vimrc' \; \
-        neww \; \
-            send-keys ' vimdiff ~/.bash_aliases $full_scripts_path/config_files/bash_aliases' C-m \; \
-            rename-window 'aliases' \; \
-        neww \; \
-            send-keys ' vimdiff ~/.tmux.conf $full_scripts_path/config_files/tmux.conf' C-m \; \
-            rename-window 'tmux conf' \; \
-        neww \; \
-            send-keys ' vimdiff ~/.config/ranger/rc.conf $full_scripts_path/config_files/rc.conf' C-m \; \
-            rename-window 'rc' \; \
-        neww \; \
-            send-keys ' vimdiff ~/.config/ranger/scope.sh $full_scripts_path/config_files/scope.sh' C-m \; \
-            rename-window 'rifle' \; \
-        neww \; \
-            send-keys ' vimdiff ~/.config/ranger/commands.py $full_scripts_path/config_files/commands.py' C-m \; \
-            rename-window 'rn commands' \; \
-        select-window -l"  # edit setup scripts.
+# tmux auto attach
+# attach general if it exists and create it if it does not
+alias tdef="tmux -u attach -t Default &> /dev/null || tmux -u new-session -s Default \; \
+        rename-window 'general' \; \
+        split-window -d  'zsh -ic lf' \; \
+        split-window -dh 'zsh -ic python' \; \
+        resize-pane -t 2 -x 60 \; \
+        new-window 'htop' \; \
+        split-window -h 'watch df' \; \
+        rename-window 'performance' \; \
+        select-window -t 1"
 
 # WSL compatibility commands
 alias clip.exe='/mnt/c/Windows/System32/clip.exe'
 alias explorer.exe='/mnt/c/Windows/explorer.exe'
-
 
 # Web development
 # enter code folder path and remote folder path in sequence, include the trailing slash in both
