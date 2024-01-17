@@ -15,12 +15,17 @@ echo "Proceed if you have run basic.sh and command_line_utlities.sh (and restart
 read dump
 
 echo "JuliaLang installation"
-if [ -d ~/julia-1.6.2 ]; then
-    echo "JuliaLang 1.6.2 already installed in home directory (~/julia-1.6.2). Skipping."
-else
-    wget -q https://julialang-s3.julialang.org/bin/linux/x64/1.6/julia-1.6.2-linux-x86_64.tar.gz
-    tar zxf julia-1.6.2-linux-x86_64.tar.gz -C ~/
-    rm -rf julia-1.6.2-linux-x86_64.tar.gz
+curl -fsSL https://install.julialang.org | sh
+
+read -p "Download and install Mojo. [y/n]: " tempvar
+tempvar=${tempvar:-n}
+if [[ $tempvar = y ]]; then
+    read -p "Enter auth key: " authkey 
+    curl https://get.modular.com | sh - && \
+    modular auth $authkey
+    modular install mojo
+    echo 'export MODULAR_HOME="$HOME/.modular"' >> ~/.zshrc
+    echo 'export PATH="$HOME/.modular/pkg/packages.modular.com_mojo/bin:$PATH"' >> ~/.zshrc
 fi
 
 read -p "Download and install R. [y/n]: " tempvar
