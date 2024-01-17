@@ -111,19 +111,19 @@ fi
 if [[ $CONFIG_GIT = y ]]; then
     git config --global user.email $email
     git config --global user.username $git_username
+    if [ -x "$(command -v gh)" ]; then
+        gh auth login
+        echo ""
+    # SSH key generation and git setup
+    # ssh-keygen -q -t ed25519 -C "$email" -f ~/.ssh/id_ed25519 -N ""
+    # eval "$(ssh-agent -s)" >/tmp/installation.log
+    # ssh-add -q ~/.ssh/id_ed25519 >/tmp/installation.log
+    else
+        echo "Github CLI not installed. Manually add key in ~/.ssh/id_ed25519.pub to github.com"
+        echo "See https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account"
+    fi
 fi
 
-# SSH key generation and git setup
-# ssh-keygen -q -t ed25519 -C "$email" -f ~/.ssh/id_ed25519 -N ""
-# eval "$(ssh-agent -s)" >/tmp/installation.log
-# ssh-add -q ~/.ssh/id_ed25519 >/tmp/installation.log
-if [ -x "$(command -v gh)" ]; then
-    gh auth login
-    echo ""
-else
-    echo "Github CLI not installed. Manually add key in ~/.ssh/id_ed25519.pub to github.com"
-    echo "See https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account"
-fi
 
 ############################################ DOT FILES ############################################
 
@@ -163,7 +163,6 @@ if [ -x "$(command -v zsh)"  ]; then
     sed -i 's|source $ZSH/oh-my-zsh.sh.*|source $ZSH/oh-my-zsh.sh; autoload -U compinit && compinit|' ~/.zshrc
 else
     execute backup_and_replace ~/.bashrc.common
-    cp ./dotfiles/.bashrc.common ~/.bashrc.common
 
     echo 'source ~/.env_vars' | cat - ~/.bashrc > temp && mv temp ~/.bashrc
     echo 'source ~/.bashrc.common' | cat - ~/.bashrc > temp && mv temp ~/.bashrc
