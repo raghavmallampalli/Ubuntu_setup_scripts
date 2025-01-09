@@ -88,6 +88,11 @@ read -p "Replace dotfiles? Read script to see which files will be replaced. [y/n
 
 mkdir -p ~/.local/bin
 
+if [ ! -w "$HOME/.local/bin" ]; then
+    echo "Cannot write to ~/.local/bin"
+    exit 1
+fi
+
 ######################################### BASIC PROGRAMS ##########################################
 
 # Fixes time problems if Windows is installed on your PC alongside Ubuntu
@@ -123,9 +128,9 @@ if [[ $CONFIG_GIT = y ]]; then
 fi
 
 # SSH key generation and git setup
-# ssh-keygen -q -t ed25519 -C "$email" -f ~/.ssh/id_ed25519 -N ""
-# eval "$(ssh-agent -s)" >/tmp/installation.log
-# ssh-add -q ~/.ssh/id_ed25519 >/tmp/installation.log
+ssh-keygen -q -t ed25519 -C "$email" -f ~/.ssh/id_ed25519 -N ""
+eval "$(ssh-agent -s)" >/tmp/installation.log
+ssh-add -q ~/.ssh/id_ed25519 >/tmp/installation.log
 if [ -x "$(command -v gh)" ]; then
     gh auth login
     echo ""
@@ -151,13 +156,15 @@ fi
 
 ########################################### ENVIRONMENT ###########################################
 if [[ $HAS_SUDO = y ]]; then
-    
+    execute backup_and_delete ~/.zshrc
+
     # ZSH installation
     rm -rf ~/.z*
     execute sudo apt-get install zsh -y
 fi
 
 if [ -x "$(command -v zsh)"  ]; then
+    execute backup_and_delete ~/.zshrc
     execute backup_and_delete ~/.zshrc.common
     cp ./dotfiles/.zshrc.common ~/.zshrc.common
 
