@@ -189,7 +189,7 @@ if [ -x "$(command -v zsh)"  ]; then
     git clone --quiet https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions > /tmp/installation.log
     sed -i 's|ZSH_THEME=.*|ZSH_THEME="powerlevel10k/powerlevel10k"|' ~/.zshrc
     sed -i 's|plugins=.*|plugins=(git dotenv conda-zsh-completion zsh-autosuggestions)|' ~/.zshrc
-    sed -i 's|source $ZSH/oh-my-zsh.sh.*|source $ZSH/oh-my-zsh.sh; autoload -U compinit && compinit|' ~/.zshrc
+    sed -i 's|source $ZSH/oh-my-zsh.sh.*|source $ZSH/oh-my-zsh.sh\; autoload -U compinit \&\& compinit|' ~/.zshrc
 else
     execute backup_and_delete ~/.bashrc.common
     cp ./dotfiles/.bashrc.common ~/.bashrc.common
