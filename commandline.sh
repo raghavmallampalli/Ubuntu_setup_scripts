@@ -99,7 +99,10 @@ fi
 if grep -q '[Mm]icrosoft' /proc/version; then
     echo "Cannot access timedatectl on WSL."
 else
-    execute timedatectl set-local-rtc 1 --adjust-system-clock
+    read -p "Set hardware clock to local time? [y/n] " SET_LOCAL_TIME
+    if [[ $SET_LOCAL_TIME = y ]]; then
+        execute timedatectl set-local-rtc 1 --adjust-system-clock
+    fi
 fi
 
 if [[ $HAS_SUDO = y ]]; then
@@ -132,7 +135,12 @@ ssh-keygen -q -t ed25519 -C "$email" -f ~/.ssh/id_ed25519 -N ""
 eval "$(ssh-agent -s)" >/tmp/installation.log
 ssh-add -q ~/.ssh/id_ed25519 >/tmp/installation.log
 if [ -x "$(command -v gh)" ]; then
-    gh auth login
+    echo "Currently logged in GitHub accounts:"
+    gh auth status
+    read -p "Would you like to login to GitHub? [y/n] " GH_LOGIN
+    if [[ $GH_LOGIN = y ]]; then
+        gh auth login
+    fi
     echo ""
 else
     echo "Github CLI not installed. Manually add key in ~/.ssh/id_ed25519.pub to github.com"
@@ -281,7 +289,8 @@ fi
 ##################################### PROGRAMMING LANGUAGES #######################################
 
 # NODE.JS installation
-if [[ $HAS_SUDO = y ]]; then
+read -p "Install Node.js? [y/n] " install_node
+if [[ $install_node = y ]] && [[ $HAS_SUDO = y ]]; then
     curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash - >> /tmp/installation.log
     execute sudo apt-get install -y nodejs
 fi
