@@ -41,19 +41,21 @@ alias lsg="git ls-files"
 # tmux aliases
 alias ta="tmux -u attach"
 alias tgex="tmux -u new-session -s General \; \
-        split-window -v \; \
-            send-keys ' python' C-m \; \
-            selectp -U \; \
+        split-window -h \; \
+            selectp -L \; \
+            resize-pane -R 30 \; \
+            selectp -R \; \
+            send-keys ' conda activate synthefy_dev && python' C-m \; \
             rename-window 'general' \; \
         neww \; \
-            send-keys ' htop' C-m \; \
+            send-keys ' nvtop' C-m \; \
             split-window -h \; \
-            send-keys ' watch sensors' C-m \; \
+            send-keys ' htop' C-m \; \
             split-window -v \; \
             send-keys 'watch df' C-m \; \
             rename-window 'performance' \; \
         select-window -t 1 \; \
-        resize-pane -t 1 -x 30"
+            selectp -L"
 alias tsimp="tmux -u new-session -s General-Minimal \; \
         split-window -h \; \
             send-keys ' n' C-m \; \
