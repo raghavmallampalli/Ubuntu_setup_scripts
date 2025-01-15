@@ -106,6 +106,8 @@ else
 fi
 
 if [[ $HAS_SUDO = y ]]; then
+    execute sudo apt update -y
+    execute sudo apt upgrade -y
     execute sudo apt-get install git wget curl -y
     curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
     execute sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
@@ -113,7 +115,6 @@ if [[ $HAS_SUDO = y ]]; then
     execute sudo apt-get update -y
     execute sudo apt-get install build-essential g++ cmake cmake-curses-gui pkg-config checkinstall automake -y
     execute sudo apt-get install xclip jq -y
-    execute sudo apt-get install libopenblas-dev liblapacke-dev libatlas-base-dev gfortran -y
     execute sudo apt-get install htop -y
     # execute sudo apt-get install run-one xbindkeys xbindkeys-config wmctrl xdotool -y
     execute sudo apt-get install fonts-powerline aria2 -y
@@ -131,9 +132,12 @@ if [[ $CONFIG_GIT = y ]]; then
 fi
 
 # SSH key generation and git setup
-ssh-keygen -q -t ed25519 -C "$email" -f ~/.ssh/id_ed25519 -N ""
-eval "$(ssh-agent -s)" >/tmp/installation.log
-ssh-add -q ~/.ssh/id_ed25519 >/tmp/installation.log
+if [ ! -f ~/.ssh/id_ed25519 ]; then
+    ssh-keygen -q -t ed25519 -C "$email" -f ~/.ssh/id_ed25519 -N ""
+    eval "$(ssh-agent -s)" >/tmp/installation.log
+    ssh-add -q ~/.ssh/id_ed25519 >/tmp/installation.log
+fi
+
 if [ -x "$(command -v gh)" ]; then
     echo "Currently logged in GitHub accounts:"
     gh auth status
@@ -288,11 +292,10 @@ fi
 
 ##################################### PROGRAMMING LANGUAGES #######################################
 
-# NODE.JS installation
+# nvm (node version manager) installation
 read -p "Install Node.js? [y/n] " install_node
-if [[ $install_node = y ]] && [[ $HAS_SUDO = y ]]; then
-    curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash - >> /tmp/installation.log
-    execute sudo apt-get install -y nodejs
+if [[ $install_node = y ]]; then
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 fi
 
 # ANACONDA installation 
@@ -313,13 +316,6 @@ if [[ $tempvar = y ]]; then
     bash /tmp/miniconda.sh
     ~/miniconda3/bin/conda init zsh
 fi
-
-# TODO: RUBY install
-# execute sudo apt-get install ruby-full -y
-# execute gem install bundler
-# RUBY_CONFIGURE_OPTS=--disable-install-doc rbenv install 2.6.10
-# rbenv local 2.6.10
-# gem install bundler-2.1.4
 
 ###################################################################################################
 
