@@ -1,3 +1,28 @@
+#!/bin/zsh
+
+if [ -f ~/.aliases ]; then
+  source ~/.aliases
+fi
+if [ -f ~/.env_vars ]; then
+  source ~/.env_vars
+fi
+
+# Auto-attach to tmux session if not already in one
+if [[ -z ${TERM_PROGRAM} && -z ${TMUX} ]]; then
+	# Check if session exists and is not attached
+	if tmux ls 2>/dev/null | grep -q "^General:.*\(attached\)$"; then
+		:  # Session exists and is attached, do nothing
+	else
+		# If session exists attach to it, otherwise create new session
+		if tmux has-session -t General 2>/dev/null; then
+			tmux -u attach -t General
+		else
+			tgex
+		fi
+	fi
+fi
+
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -48,9 +73,7 @@ v () {
 }
 
 bindkey -v
-if [ -f ~/.aliases ]; then
-  source ~/.aliases
-fi
+
 setopt nonomatch # allows globbing (name* matching in apt, ls etc.), use with caution
 [[ -a /etc/zsh_command_not_found ]] && . /etc/zsh_command_not_found
 setopt SHARE_HISTORY
@@ -70,25 +93,3 @@ export BAT_PAGER="less -FRX"
 # Customising prompt: powerlevel10k
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-############################################
-# tmux auto attach
-# automatically attaches 'General' or 'General-Minimal' if it exists and is not attached.
-# Creates if it does not.
-if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
-	Session="General-Minimal"
-else
-	Session="General"
-fi
-if [[ -z ${TERM_PROGRAM} && -z ${TMUX} ]]; then
-	tmux ls 2>/dev/null | grep $Session >/dev/null
-	if [ $? -eq 0 ]; then
-		tmux ls | grep $Session | grep 'attached' >/dev/null
-		if [ $? -eq 1 ]; then
-			tmux -u attach -t $Session
-		fi
-	else
-		tgex # Or tsimp 
-	fi
-fi
-###########################################

@@ -183,7 +183,6 @@ if [ -x "$(command -v zsh)"  ]; then
     spatialPrint "Setting up Oh-My-Zsh"
     echo "Fill in options according to preference and exit zsh once it loads."
     sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
-    echo 'source ~/.env_vars' | cat - ~/.zshrc > temp && mv temp ~/.zshrc
     echo 'source ~/.zshrc.common' | cat - ~/.zshrc > temp && mv temp ~/.zshrc
     echo "Installed Oh-My-Zsh."
 
