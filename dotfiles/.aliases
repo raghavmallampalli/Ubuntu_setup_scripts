@@ -45,7 +45,7 @@ alias tgex="tmux -u new-session -s General \; \
             selectp -L \; \
             resize-pane -R 30 \; \
             selectp -R \; \
-            send-keys ' conda activate synthefy_dev && python' C-m \; \
+            send-keys ' conda activate base && python' C-m \; \
             rename-window 'general' \; \
         neww \; \
             send-keys ' nvtop' C-m \; \
