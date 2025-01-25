@@ -7,21 +7,24 @@ if [ -f ~/.env_vars ]; then
   source ~/.env_vars
 fi
 
+########################### ATTACH TO TMUX SESSION ###########################
+SESSION_NAME="General"
 # Auto-attach to tmux session if not already in one
+# Skip special terminals (like VS code integrated)
 if [[ -z ${TERM_PROGRAM} && -z ${TMUX} ]]; then
 	# Check if session exists and is not attached
-	if tmux ls 2>/dev/null | grep -q "^General:.*\(attached\)$"; then
-		:  # Session exists and is attached, do nothing
+	if tmux ls 2>/dev/null | grep -qE "${SESSION_NAME}:.*?attached"; then
+		echo "Session exists and is attached, force attach with ta -t ${SESSION_NAME}"
 	else
 		# If session exists attach to it, otherwise create new session
-		if tmux has-session -t General 2>/dev/null; then
-			tmux -u attach -t General
+		if tmux has-session -t ${SESSION_NAME} 2>/dev/null; then
+			tmux -u attach -t ${SESSION_NAME}
 		else
 			tgex
 		fi
 	fi
 fi
-
+######################### END ATTACH TO TMUX SESSION ###########################
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
