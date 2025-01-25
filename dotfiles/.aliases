@@ -28,11 +28,6 @@ alias bashtop='~/.bashtop/bashtop'
 alias fzp="fzf-tmux --preview 'bat --style=numbers --color=always {} | head -500'"
 alias fzf="fzf-tmux"
 
-# fasd aliases: see ~/.fasd-init-zsh for full list
-alias cz='fasd_cd -d'
-alias o='a -e xdg-open' # quick opening files with xdg-open
-alias c='fasd -ia -e code' # quick opening files with xdg-open
-
 # git aliases
 alias gpom="git push origin master"
 alias ggr="git log --all --decorate --oneline --graph"

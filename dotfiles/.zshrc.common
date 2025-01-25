@@ -30,18 +30,6 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-[ -f ~/.fzf-git.sh ] && source ~/.fzf-git.sh
-
-# fasd
-fasd_cache="$HOME/.fasd-init-zsh"
-if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
-	fasd --init posix-alias zsh-hook zsh-ccomp zsh-ccomp-install >| "$fasd_cache"
-fi
-source "$fasd_cache" 2>/dev/null
-unset fasd_cache
-
 # Change directory with lf
 cl () {
     tmp="$(mktemp)"
@@ -55,21 +43,6 @@ cl () {
             fi
         fi
     fi
-}
-
-# fzf-fasd integration
-j () {
-    fasdlist=$( fasd -d -l -r $1 | \
-      fzf --query="$1 " --select-1 --exit-0 --height=25% --reverse --tac --no-sort --cycle) &&
-    cd "$fasdlist"
-}
-v () {
-    export fasdlist=$( fasd -f -l -r $1 | \
-        fzf --query="$1 " --select-1 --exit-0 --height=25% --reverse --tac --no-sort --cycle)
-    echo "Opening $fasdlist. Press any key to continue."
-    # Do not remove this line nvim opens with artefacts without it.
-    read dump
-    vim -O "$fasdlist"
 }
 
 bindkey -v

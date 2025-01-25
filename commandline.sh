@@ -191,7 +191,7 @@ if [ -x "$(command -v zsh)"  ]; then
     git clone --quiet https://github.com/conda-incubator/conda-zsh-completion.git ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/conda-zsh-completion > /tmp/installation.log
     git clone --quiet https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions > /tmp/installation.log
     sed -i 's|ZSH_THEME=.*|ZSH_THEME="powerlevel10k/powerlevel10k"|' ~/.zshrc
-    sed -i 's|plugins=.*|plugins=(git dotenv conda-zsh-completion zsh-autosuggestions)|' ~/.zshrc
+    sed -i 's|plugins=.*|plugins=(git dotenv conda-zsh-completion zsh-autosuggestions zoxide)|' ~/.zshrc
     sed -i 's|source $ZSH/oh-my-zsh.sh.*|source $ZSH/oh-my-zsh.sh\; autoload -U compinit \&\& compinit|' ~/.zshrc
 else
     execute backup_and_delete ~/.bashrc.common
@@ -229,14 +229,13 @@ fi
 wget https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh -qO ~/.fzf-git.sh
 echo "Installed fzf."
 
-# FASD: directory navigation tool - https://github.com/clvv/fasd
+# Zoxide: directory navigation tool - https://github.com/ajeetdsouza/zoxide
 if [[ $HAS_SUDO = y ]]; then
-    execute sudo apt-get install fasd -y
+    execute sudo apt-get install zoxide -y
 else
-    wget https://github.com/clvv/fasd/tarball/1.0.1 -qO- | tar -xz -C /tmp/
-    mv /tmp/clvv-fasd*/fasd ~/.local/bin/
+    wget https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.6/zoxide_0.9.6-1_amd64.deb -O /tmp/zoxide.deb && dpkg -i /tmp/zoxide.deb
 fi
-echo "Installed fasd."
+echo "Installed zoxide."
 
 # BAT: better cat - https://github.com/sharkdp/bat
 if [[ $HAS_SUDO = y ]]; then
@@ -276,12 +275,19 @@ cp ./dotfiles/globalgitignore ~/.rgignore
 echo "Installed ripgrep."
 
 # LF: command line file navigation - https://github.com/gokcehan/lf
-wget https://github.com/gokcehan/lf/releases/download/r28/lf-linux-amd64.tar.gz -qO- | tar -xz -C ~/.local/bin
+url=$(wget "https://api.github.com/repos/gokcehan/lf/releases/latest" -qO- | grep browser_download_url | grep "amd64" | grep "linux" | head -n 1 | cut -d \" -f 4)
+wget $url -qO- | tar -xz -C ~/.local/bin
 mkdir -p ~/.config/lf
 cp ./dotfiles/lfrc ~/.config/lf/lfrc
 wget https://raw.githubusercontent.com/gokcehan/lf/master/etc/colors.example -qO ~/.config/lf/colors
 wget https://raw.githubusercontent.com/gokcehan/lf/master/etc/icons.example -qO ~/.config/lf/icons
 echo "Installed lf."
+
+# DUF: disk usage finder - https://github.com/muesli/duf
+if [[ $HAS_SUDO = y ]]; then
+    execute sudo apt-get install duf -y
+fi
+echo "Installed duf."
 
 # FFMPEG
 if [[ $HAS_SUDO = y ]]; then
@@ -292,14 +298,14 @@ fi
 ##################################### PROGRAMMING LANGUAGES #######################################
 
 # nvm (node version manager) installation
-read -p "Install Node.js? [y/n] " install_node
-if [[ $install_node = y ]]; then
+read -p "Install nvm? [y/n] " install_nvm
+if [[ $install_nvm = y ]]; then
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 fi
 
 # ANACONDA installation 
-read -p "Install miniconda? [y/n] " tempvar
-if [[ $tempvar = y ]]; then
+read -p "Install miniconda? [y/n] " install_miniconda
+if [[ $install_miniconda = y ]]; then
     tempvar=${tempvar:-n}
     if [ -d ~/miniconda3 ]; then
         read -p "miniconda3 installed in default location directory. delete/manually enter install location/quit [d/m/Ctrl+C]: " tempvar
@@ -316,6 +322,12 @@ if [[ $tempvar = y ]]; then
     ~/miniconda3/bin/conda init zsh
 fi
 
+# UV installation: https://docs.astral.sh/uv/getting-started/installation/#installation-methods
+read -p "Install uv? [y/n] " install_uv
+if [[ $install_uv = y ]]; then
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    echo 'eval "$(uv generate-shell-completion zsh)"' >> ~/.zshrc
+fi
 ###################################################################################################
 
 echo "Mount windows partitions at startup using 'sudo fdisk -l' and by editing /etc/fstab"
