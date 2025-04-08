@@ -166,8 +166,11 @@ mkdir -p "$BACKUP_DIR"
 log "INFO" "Starting installation"
 
 # Speed up the process
+# Initialize NUMJOBS if not set
+NUMJOBS=${NUMJOBS:-}
+
 # Env Var NUMJOBS overrides automatic detection
-if [[ -n $NUMJOBS ]]; then
+if [[ -n "${NUMJOBS:-}" ]]; then
     MJOBS=$NUMJOBS
 elif [[ -f /proc/cpuinfo ]]; then
     MJOBS=$(grep -c processor /proc/cpuinfo)
@@ -176,6 +179,8 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 else
     MJOBS=4
 fi
+
+log "INFO" "Using $MJOBS parallel jobs for compilation"
 
 log "INFO" "Do not execute this file without reading it first and changing directory to the parent folder of this script."
 log "INFO" "If it exits without completing install run 'sudo apt --fix-broken install'."
