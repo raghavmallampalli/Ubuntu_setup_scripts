@@ -137,18 +137,6 @@ is_wsl() {
     return 1
 }
 
-# Network connectivity check
-check_network() {
-    show_progress "Checking network connectivity"
-    if ! ping -c 1 github.com >/dev/null 2>&1; then
-        log "ERROR" "No network connectivity to github.com"
-        finish_progress
-        return 1
-    fi
-    finish_progress
-    return 0
-}
-
 # Configuration backup
 backup_configs() {
     local backup_dir="$BACKUP_DIR/config_backup_$(date +%Y%m%d_%H%M%S)"
@@ -176,7 +164,6 @@ validate_email() {
 # Initialize
 mkdir -p "$BACKUP_DIR"
 log "INFO" "Starting installation"
-check_network || exit 1
 
 # Speed up the process
 # Env Var NUMJOBS overrides automatic detection
