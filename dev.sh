@@ -1,10 +1,25 @@
 #!/bin/bash
 
-# Source functions.sh to import utility functions
-source "$(dirname "$0")/functions.sh"
+set -e
+set -u
+set -o pipefail
+
+source "$(dirname "$0")/common.sh"
+
+trap 'cleanup ${LINENO} $?' EXIT
 
 log "INFO"  "Proceed if you have run cli.sh (and restarted shell), changed directory to the parent folder of this script and gone through it. Ctrl+C and do so first if not. [ENTER] to continue."
 read dump
+
+# Detect if running as root
+if [ "$EUID" -eq 0 ]; then
+    ROOT_MODE=true
+    HOME="/root"
+    log "INFO" "Running in root mode. Home directory set to /root"
+else
+    ROOT_MODE=false
+fi
+export ROOT_MODE
 
 # Gather all user input at the beginning
 read -p "Install uv? [y/n] " install_uv
@@ -35,7 +50,7 @@ if [[ $install_miniconda = y ]]; then
         elif [[ $tempvar = m ]]; then
             log "INFO" "Ensure that you enter a different location during installation."
         fi
-    fi 
+    fi
     wget -q https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh
     chmod +x /tmp/miniconda.sh
     bash /tmp/miniconda.sh

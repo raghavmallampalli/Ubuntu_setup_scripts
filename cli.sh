@@ -6,9 +6,7 @@ set -o pipefail
 
 source "$(dirname "$0")/common.sh"
 
-# Set up error trap
-trap 'handle_error ${LINENO} $?' ERR
-trap cleanup EXIT
+trap 'cleanup ${LINENO} $?' EXIT
 
 # Detect if running as root
 if [ "$EUID" -eq 0 ]; then
@@ -18,29 +16,12 @@ if [ "$EUID" -eq 0 ]; then
 else
     ROOT_MODE=false
 fi
+export ROOT_MODE
 
 # Initialize
 mkdir -p "$BACKUP_DIR"
 log "INFO" "Starting installation"
-
-# Speed up the process
-# Initialize NUMJOBS if not set
-NUMJOBS=${NUMJOBS:-}
-
-# Env Var NUMJOBS overrides automatic detection
-if [[ -n "${NUMJOBS:-}" ]]; then
-    MJOBS=$NUMJOBS
-elif [[ -f /proc/cpuinfo ]]; then
-    MJOBS=$(grep -c processor /proc/cpuinfo)
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    MJOBS=$(sysctl -n machdep.cpu.thread_count)
-else
-    MJOBS=4
-fi
-
-log "INFO" "Using $MJOBS parallel jobs for compilation"
-
-log "INFO" "Do not execute this file without reading it first and changing directory to the parent folder of this script."
+log "WARN" "Do not execute this file without reading it first and changing directory to the parent folder of this script."
 log "INFO" "If it exits without completing install run 'sudo apt --fix-broken install'."
 
 # Backup existing configurations before starting
@@ -68,6 +49,11 @@ else
     SET_LOCAL_TIME="n"
 fi
 
+# This will work even if gh is not installed, will just print the not logged in message
+log "INFO" "Currently logged in GitHub accounts:"
+gh auth status 2>/dev/null || echo "Not logged in to any GitHub accounts"
+read -p "Would you like to login to GitHub? [y/n] " GH_LOGIN
+
 show_progress "Creating local bin directory"
 mkdir -p "$HOME/.local/bin"
 if [ ! -w "$HOME/.local/bin" ]; then
@@ -75,6 +61,18 @@ if [ ! -w "$HOME/.local/bin" ]; then
     exit 1
 fi
 finish_progress
+
+######################################### SSH #####################################################
+
+# SSH key generation and git setup
+if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
+    show_progress "Generating SSH key"
+    mkdir -p "$HOME/.ssh"
+    ssh-keygen -q -t ed25519 -C "$(whoami)@$(hostname)" -f "$HOME/.ssh/id_ed25519" -N ""
+    eval "$(ssh-agent -s)" >/dev/null 2>&1
+    ssh-add -q "$HOME/.ssh/id_ed25519"
+    finish_progress
+fi
 
 ######################################### BASIC PROGRAMS ##########################################
 
@@ -97,16 +95,11 @@ if [[ $HAS_SUDO = y ]]; then
     finish_progress
 
     show_progress "Setting up GitHub CLI keyring"
-    if [ "$ROOT_MODE" = true ]; then
-        dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg < <(curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg)
-        chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list
-    else
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        run_command chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-    fi
+    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+    run_command chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
     finish_progress
+    run_command apt-get install gh -y
 
     show_progress "Installing development tools"
     run_command apt-get update -y
@@ -115,48 +108,28 @@ if [[ $HAS_SUDO = y ]]; then
     run_command apt-get install htop nvtop -y
     run_command apt-get install fonts-powerline aria2 -y
     run_command apt-get install moreutils -y
-    run_command apt-get install gh -y
-    finish_progress
-
-elif ! [ -x "$(command -v wget)"  ] && [ -x "$(command -v git)"  ]; then
-    log "ERROR" "Script requires wget and git to work. Exiting."
-    exit 1
-fi
-
-# SSH key generation and git setup
-if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
-    show_progress "Generating SSH key"
-    mkdir -p "$HOME/.ssh"
-    ssh-keygen -q -t ed25519 -C "$email" -f "$HOME/.ssh/id_ed25519" -N ""
-    eval "$(ssh-agent -s)" >/dev/null 2>&1
-    ssh-add -q "$HOME/.ssh/id_ed25519"
     finish_progress
 fi
 
-if [ -x "$(command -v gh)" ]; then
-    log "INFO" "Currently logged in GitHub accounts:"
-    gh auth status
-    read -p "Would you like to login to GitHub? [y/n] " GH_LOGIN
-    if [[ $GH_LOGIN = y ]]; then
-        gh auth login
-    fi
-else
+if [ -x "$(command -v gh)" ] && [[ $GH_LOGIN = y ]]; then
+    gh auth login
+elif ! [ -x "$(command -v gh)" ]; then
     log "WARN" "Github CLI not installed. Manually add key in $HOME/.ssh/id_ed25519.pub to github.com"
     log "INFO" "See https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account"
 fi
 
-############################################ DOT FILES ############################################
+########################################### DOT FILES ############################################
 
 if [[ $REPLACE_DOTFILES = y ]]; then
     show_progress "Installing dotfiles"
-    local dotfiles=(
+    dotfiles=(
         ".aliases"
         ".env_vars"
         ".tmux.conf"
         ".vimrc"
         ".p10k.zsh"
     )
-    
+
     for dotfile in "${dotfiles[@]}"; do
         install_dotfile "./dotfiles/$dotfile" "$HOME/$dotfile" "$SOFT_LINK_DOTFILES"
     done
@@ -178,20 +151,27 @@ if [ -x "$(command -v zsh)"  ]; then
     execute backup_and_delete "$HOME/.zshrc.common"
     cp "./dotfiles/.zshrc.common" "$HOME/.zshrc.common"
 
-    log "INFO" "Setting up Oh-My-Zsh"
-    log "INFO" "Fill in options according to preference and exit zsh once it loads."
-    sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
-    echo "source \$HOME/.zshrc.common" | cat - "$HOME/.zshrc" > temp && mv temp "$HOME/.zshrc"
-    log "INFO" "Installed Oh-My-Zsh."
+    if [ -d "$HOME/.oh-my-zsh" ]; then
+        log "INFO" "Oh-My-Zsh already installed."
+    else
+        log "INFO" "Setting up Oh-My-Zsh"
+        log "INFO" "Fill in options according to preference and exit zsh once it loads."
+        sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+        echo "source \$HOME/.zshrc.common" | cat - "$HOME/.zshrc" > temp && mv temp "$HOME/.zshrc"
+        log "INFO" "Installed Oh-My-Zsh."
 
-    show_progress "Installing ZSH plugins"
-    git clone --quiet --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" > /dev/null
-    git clone --quiet https://github.com/conda-incubator/conda-zsh-completion.git "${ZSH_CUSTOM:=$HOME/.oh-my-zsh/custom}/plugins/conda-zsh-completion" > /dev/null
-    git clone --quiet https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" > /dev/null
-    sed -i "s|ZSH_THEME=.*|ZSH_THEME=\"powerlevel10k/powerlevel10k\"|" "$HOME/.zshrc"
-    sed -i "s|plugins=.*|plugins=(git dotenv conda-zsh-completion zsh-autosuggestions zoxide)|" "$HOME/.zshrc"
-    sed -i "s|source \$ZSH/oh-my-zsh.sh.*|source \$ZSH/oh-my-zsh.sh\; autoload -U compinit \&\& compinit|" "$HOME/.zshrc"
-    finish_progress
+        show_progress "Installing ZSH plugins"
+        git clone --quiet --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" > /dev/null
+        git clone --quiet https://github.com/conda-incubator/conda-zsh-completion.git "${ZSH_CUSTOM:=$HOME/.oh-my-zsh/custom}/plugins/conda-zsh-completion" > /dev/null
+        git clone --quiet https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" > /dev/null
+        sed -i "s|ZSH_THEME=.*|ZSH_THEME=\"powerlevel10k/powerlevel10k\"|" "$HOME/.zshrc"
+        sed -i "s|plugins=.*|plugins=(git dotenv conda-zsh-completion zsh-autosuggestions zoxide)|" "$HOME/.zshrc"
+        sed -i "s|source \$ZSH/oh-my-zsh.sh.*|source \$ZSH/oh-my-zsh.sh\; autoload -U compinit \&\& compinit|" "$HOME/.zshrc"
+        finish_progress
+    fi
+
+    echo "source \$HOME/.zshrc.common" | cat - "$HOME/.zshrc" > temp && mv temp "$HOME/.zshrc"
+
 else
     show_progress "Setting up Bash environment"
     execute backup_and_delete "$HOME/.bashrc.common"
