@@ -8,7 +8,14 @@ LOG_FILE="/tmp/installation.log"
 log() {
     level="$1"
     shift
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$level] $*" | tee -a "$LOG_FILE"
+    echo ""
+    if [ "$level" = "WARN" ]; then
+        echo "[$(date +'%Y-%m-%d %H:%M:%S')] [\033[33m$level\033[0m] $*" | tee -a "$LOG_FILE"
+    elif [ "$level" = "ERROR" ]; then
+        echo "[$(date +'%Y-%m-%d %H:%M:%S')] [\033[31m$level\033[0m] $*" | tee -a "$LOG_FILE"
+    else
+        echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$level] $*" | tee -a "$LOG_FILE"
+    fi
 }
 
 # Progress indication
