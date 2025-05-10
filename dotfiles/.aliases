@@ -6,8 +6,6 @@ alias la='n'
 alias gettime='sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d" " -f5-8)Z";'
 alias list-repos="apt-cache policy |grep http |awk '{print $2 $3}' |sort -u"
 alias xo="xdg-open"
-# alias vim="nvim -O" # open multiple files as vertical splits
-# alias vimdiff='nvim -d'
 alias vimdiff='vim -d'
 alias extract='atool --extract'
 alias compress='atool --add'
@@ -15,15 +13,9 @@ alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias printpath="echo \$PATH | sed 's/\\:/\\n/g'"
 
-alias jn="jupyter notebook"
-alias jl="jupyter lab"
-
 alias cat='bat -p'
 alias aria="aria2c --file-allocation=none -c -x 10 -s 10"
-alias ytdla="youtube-dl -f 140 --add-metadata --metadata-from-title \"%(artist)s - %(title)s\" -o \"%(title)s.%(ext)s\""
-alias ytdlv="youtube-dl -f 'bestvideo[height<=720]+bestaudio/best[height<=720]' --write-sub"
 alias qcd="cd"
-alias bashtop='~/.bashtop/bashtop'
 
 # fzf aliases
 alias fzfupdate='cd ~/.fzf && git pull && ./install && cd -'
@@ -53,6 +45,10 @@ alias tgex="tmux -u new-session -s General \; \
             rename-window 'performance' \; \
         select-window -t 1 \; \
             select-pane -L"
+
+# Python
+alias uvs="source .venv/bin/activate"
+alias uvr="uv run"
 
 # WSL compatibility commands
 alias clip.exe='/mnt/c/Windows/System32/clip.exe'
