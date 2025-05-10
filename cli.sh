@@ -173,9 +173,15 @@ if [ -x "$(command -v zsh)"  ]; then
         log "INFO" "Installed Oh-My-Zsh."
 
         show_progress "Installing ZSH plugins"
-        git clone --quiet --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" > /dev/null
-        git clone --quiet https://github.com/conda-incubator/conda-zsh-completion.git "${ZSH_CUSTOM:=$HOME/.oh-my-zsh/custom}/plugins/conda-zsh-completion" > /dev/null
-        git clone --quiet https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" > /dev/null
+        if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
+            git clone --quiet --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" > /dev/null
+        fi
+        if [ ! -d "${ZSH_CUSTOM:=$HOME/.oh-my-zsh/custom}/plugins/conda-zsh-completion" ]; then
+            git clone --quiet https://github.com/conda-incubator/conda-zsh-completion.git "${ZSH_CUSTOM:=$HOME/.oh-my-zsh/custom}/plugins/conda-zsh-completion" > /dev/null
+        fi
+        if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]; then
+            git clone --quiet https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" > /dev/null
+        fi
         sed -i "s|ZSH_THEME=.*|ZSH_THEME=\"powerlevel10k/powerlevel10k\"|" "$HOME/.zshrc"
         sed -i "s|plugins=.*|plugins=(git dotenv conda-zsh-completion zsh-autosuggestions zoxide)|" "$HOME/.zshrc"
         sed -i "s|source \$ZSH/oh-my-zsh.sh.*|source \$ZSH/oh-my-zsh.sh\; autoload -U compinit \&\& compinit|" "$HOME/.zshrc"
@@ -201,9 +207,11 @@ if [[ $HAS_SUDO = y ]]; then
     show_progress "Installing TMUX and dependencies"
     run_command apt-get install libevent-dev ncurses-dev build-essential bison pkg-config -y
     run_command apt-get install tmux -y
-    rm -rf "$HOME/.tmux/plugins/tpm"
-    mkdir -p "$HOME/.tmux/plugins"
-    git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+    if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+        rm -rf "$HOME/.tmux/plugins/tpm"
+        mkdir -p "$HOME/.tmux/plugins"
+        git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+    fi
     log "INFO" "Press Ctrl+A I (capital I) on first run of tmux to install plugins."
     finish_progress
 fi
@@ -214,7 +222,9 @@ log "INFO" "Installing command line utilities..."
 # FZF: fuzzy finder - https://github.coym/junegunn/fzf
 if ! command -v fzf >/dev/null 2>&1; then
     show_progress "Installing FZF"
-    execute git clone --quiet --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+    if [ ! -d "$HOME/.fzf" ]; then
+        execute git clone --quiet --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+    fi
     # Install with all features and do not update shell configs
     execute "$HOME/.fzf/install" --all --no-update-rc
     # Download git integration script
