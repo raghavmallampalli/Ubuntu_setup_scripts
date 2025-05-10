@@ -15,7 +15,6 @@ read -p "Install nvm? [y/n] " install_nvm
 read -p "Install Julia? [y/n] " install_julia
 read -p "Install R? [y/n]: " install_r
 read -p "Install GNU octave? [y/n]: " install_octave
-read -p "Create a workbench folder for scientific computing and data science? [y/n]: " create_workbench
 
 # UV installation: https://docs.astral.sh/uv/getting-started/installation/#installation-methods
 if [[ $install_uv = y ]]; then
@@ -76,7 +75,5 @@ fi
 if [[ $install_octave = y ]]; then
     run_command apt-get install octave -y
 fi
-
-
 
 log "INFO" "Installation complete."

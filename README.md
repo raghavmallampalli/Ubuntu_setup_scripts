@@ -3,6 +3,15 @@ These are the scripts I use to set up my Ubuntu. They install tools for Web deve
 These scripts are largely inspired by https://github.com/rsnk96/Ubuntu-Setup-Scripts. Some of the code is taken directly from there. 
 For a list of useful commands and tips, check out [help](Help.md)
 
+You can clone this repo using HTTPS, and afterward run a modification of this command to switch the remote to ssh authentication
+```bash
+git clone https://github.com/raghavmallampalli/Ubuntu_setup_scripts.git
+```
+
+```bash
+git remote set-url origin git@github.com:raghavmallampalli/Ubuntu_setup_scripts.git
+```
+
 ## Scripts
 ### cli
 Basic setup of Ubuntu. It installs some essential packages and their dependencies. It also installs some useful command line utilites.
