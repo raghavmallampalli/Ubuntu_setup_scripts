@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# OUT OF DATE: I no longer use Ubuntu GUI.
 set -e
 
 spatialPrint() {
