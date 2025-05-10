@@ -30,12 +30,6 @@ alias fzfupdate='cd ~/.fzf && git pull && ./install && cd -'
 alias fzp="fzf-tmux --preview 'bat --style=numbers --color=always {} | head -500'"
 alias fzf="fzf-tmux"
 
-# fasd aliases: see ~/.fasd-init-zsh for full list
-alias cz='fasd_cd -d'
-alias o='a -e xdg-open' # quick opening files with xdg-open
-alias c='fasd -ia -e code' # quick opening files with xdg-open
-
-
 # git aliases
 alias gpom="git push origin master"
 alias ggr="git log --all --decorate --oneline --graph"
@@ -43,17 +37,22 @@ alias lsg="git ls-files"
 
 # tmux aliases
 alias ta="tmux -u attach"
-# tmux auto attach
-# attach general if it exists and create it if it does not
-alias tdef="tmux -u attach -t Default &> /dev/null || tmux -u new-session -s Default \; \
-        rename-window 'general' \; \
-        split-window -d  'zsh -ic lf' \; \
-        split-window -dh 'zsh -ic python' \; \
-        resize-pane -t 2 -x 60 \; \
-        new-window 'htop' \; \
-        split-window -h 'watch df' \; \
-        rename-window 'performance' \; \
-        select-window -t 1"
+alias tgex="tmux -u new-session -s General \; \
+        split-window -h \; \
+            select-pane -L \; \
+            resize-pane -R 30 \; \
+            select-pane -R \; \
+            send-keys 'conda activate base && python' C-m \; \
+            rename-window 'general' \; \
+        new-window \; \
+            send-keys 'nvtop' C-m \; \
+            split-window -h \; \
+            send-keys 'htop' C-m \; \
+            split-window -v \; \
+            send-keys 'watch df' C-m \; \
+            rename-window 'performance' \; \
+        select-window -t 1 \; \
+            select-pane -L"
 
 # WSL compatibility commands
 alias clip.exe='/mnt/c/Windows/System32/clip.exe'

@@ -1,7 +1,31 @@
-source ~/.sources
-if test -z "$TMUX"; then
-    tdef
+#!/bin/zsh
+
+if [ -f ~/.aliases ]; then
+  source ~/.aliases
 fi
+if [ -f ~/.env_vars ]; then
+  source ~/.env_vars
+fi
+
+########################### ATTACH TO TMUX SESSION ###########################
+SESSION_NAME="General"
+# Auto-attach to tmux session if not already in one
+# Skip special terminals (like VS code integrated)
+if [[ -z ${TERM_PROGRAM} && -z ${TMUX} ]]; then
+	# Check if session exists and is not attached
+	if tmux ls 2>/dev/null | grep -qE "${SESSION_NAME}:.*?attached"; then
+		echo "Session exists and is attached, force attach with ta -t ${SESSION_NAME}"
+	else
+		# If session exists attach to it, otherwise create new session
+		if tmux has-session -t ${SESSION_NAME} 2>/dev/null; then
+			tmux -u attach -t ${SESSION_NAME}
+		else
+			tgex
+		fi
+	fi
+fi
+######################### END ATTACH TO TMUX SESSION ###########################
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -24,21 +48,6 @@ cl () {
     fi
 }
 
-# fzf-fasd integration
-j () {
-    fasdlist=$( fasd -d -l -r $1 | \
-      fzf --query="$1 " --select-1 --exit-0 --height=25% --reverse --tac --no-sort --cycle) &&
-    cd "$fasdlist"
-}
-v () {
-    export fasdlist=$( fasd -f -l -r $1 | \
-        fzf --query="$1 " --select-1 --exit-0 --height=25% --reverse --tac --no-sort --cycle)
-    echo "Opening $fasdlist. Press any key to continue."
-    # Do not remove this line nvim opens with artefacts without it.
-    read dump
-    vim -O "$fasdlist"
-}
-
 bindkey -v
 setopt nonomatch # allows globbing (name* matching in apt, ls etc.), use with caution
 [[ -a /etc/zsh_command_not_found ]] && . /etc/zsh_command_not_found
@@ -55,3 +64,7 @@ bindkey -M vicmd V edit-command-line
 # bat configuration
 export BAT_THEME="Dracula"
 export BAT_PAGER="less -FRX"
+
+# Customising prompt: powerlevel10k
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
