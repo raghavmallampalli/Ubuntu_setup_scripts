@@ -41,7 +41,7 @@ alias tgex="tmux -u new-session -s General \; \
             split-window -h \; \
             send-keys 'htop' C-m \; \
             split-window -v \; \
-            send-keys 'watch df' C-m \; \
+            send-keys 'watch duf' C-m \; \
             rename-window 'performance' \; \
         select-window -t 1 \; \
             select-pane -L"
