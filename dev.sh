@@ -35,7 +35,7 @@ read -p "Install GNU octave? [y/n]: " install_octave
 if [[ $install_uv = y ]]; then
     show_progress "Installing UV"
     curl -LsSf https://astral.sh/uv/install.sh | sh
-    log "INFO" 'eval "$(uv generate-shell-completion zsh)"' >> "$HOME/.zshrc"
+    echo 'eval "$(uv generate-shell-completion zsh)"' >> "$HOME/.zshrc"
     finish_progress
 fi
 

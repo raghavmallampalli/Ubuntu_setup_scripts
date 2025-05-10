@@ -156,7 +156,19 @@ if [ -x "$(command -v zsh)"  ]; then
     else
         log "INFO" "Setting up Oh-My-Zsh"
         log "INFO" "Fill in options according to preference and exit zsh once it loads."
-        sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+        
+        # Change default shell to zsh: cannot be done safely on root
+        if [ "$SHELL" != "$(which zsh)" ]; then
+            log "INFO" "Changing default shell to zsh"
+            if [ "$ROOT_MODE" != "true" ]; then
+                sudo chsh -s "$(which zsh)" "$(whoami)"
+                log "INFO" "Shell changed to zsh. Changes will take effect after logout."
+            else
+                log "WARN" "Running as root. Shell change skipped for safety."
+            fi
+        fi
+
         echo "source \$HOME/.zshrc.common" | cat - "$HOME/.zshrc" > temp && mv temp "$HOME/.zshrc"
         log "INFO" "Installed Oh-My-Zsh."
 
@@ -200,10 +212,12 @@ fi
 log "INFO" "Installing command line utilities..."
 
 # FZF: fuzzy finder - https://github.coym/junegunn/fzf
-if ! [[ $(command -v fzf) ]]; then
+if ! command -v fzf >/dev/null 2>&1; then
     show_progress "Installing FZF"
     execute git clone --quiet --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
-    /bin/bash "$HOME/.fzf/install"
+    # Install with all features and do not update shell configs
+    execute "$HOME/.fzf/install" --all --no-update-rc
+    # Download git integration script
     wget https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh -qO "$HOME/.fzf-git.sh"
     finish_progress
 fi
