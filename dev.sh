@@ -62,19 +62,19 @@ fi
 
 if [[ $install_r = y ]]; then
     show_progress "Installing R"
-    execute sudo apt-get install --no-install-recommends software-properties-common dirmngr -y
-    execute sudo apt-get install libzmq3-dev libcurl4-openssl-dev libssl-dev jupyter-core jupyter-client -y
-    wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc >> /dev/null
-    sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" -y >> /dev/null
-    execute sudo apt-get install --no-install-recommends r-base -y
-    sudo add-apt-repository ppa:c2d4u.team/c2d4u4.0+ -y >> /dev/null
+    run_command apt-get install --no-install-recommends software-properties-common dirmngr -y
+    run_command apt-get install libzmq3-dev libcurl4-openssl-dev libssl-dev jupyter-core jupyter-client -y
+    wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | run_command tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc >> /dev/null
+    run_command add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" -y >> /dev/null
+    run_command apt-get install --no-install-recommends r-base -y
+    run_command add-apt-repository ppa:c2d4u.team/c2d4u4.0+ -y >> /dev/null
     show_progress "Installing RStudio"
-    sudo apt-get install rstudio -y
+    run_command apt-get install rstudio -y
     finish_progress
 fi
 
 if [[ $install_octave = y ]]; then
-    execute sudo apt-get install octave -y
+    run_command apt-get install octave -y
 fi
 
 

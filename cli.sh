@@ -54,6 +54,12 @@ else
 fi
 
 read -p "Replace dotfiles? Read script to see which files will be replaced. [y/n] " REPLACE_DOTFILES
+if [[ $REPLACE_DOTFILES = y ]]; then
+    log "INFO" "Dotfiles can be copied if you do not intend to make further edits, or soft linked if you wish to keep them up to date."
+    log "WARN" "If you soft link, moving or deleting this repo folder will break the links."
+    read -p "Soft link dotfiles? [y/n] " SOFT_LINK_DOTFILES
+    SOFT_LINK_DOTFILES=${SOFT_LINK_DOTFILES:-n}
+fi
 
 # Check if we can set local time (not WSL)
 if ! is_wsl; then
@@ -143,11 +149,17 @@ fi
 
 if [[ $REPLACE_DOTFILES = y ]]; then
     show_progress "Installing dotfiles"
-    install_dotfile "./dotfiles/.aliases" "$HOME/.aliases"
-    install_dotfile "./dotfiles/.env_vars" "$HOME/.env_vars"
-    install_dotfile "./dotfiles/.tmux.conf" "$HOME/.tmux.conf"
-    install_dotfile "./dotfiles/.vimrc" "$HOME/.vimrc"
-    install_dotfile "./dotfiles/.p10k.zsh" "$HOME/.p10k.zsh"
+    local dotfiles=(
+        ".aliases"
+        ".env_vars"
+        ".tmux.conf"
+        ".vimrc"
+        ".p10k.zsh"
+    )
+    
+    for dotfile in "${dotfiles[@]}"; do
+        install_dotfile "./dotfiles/$dotfile" "$HOME/$dotfile" "$SOFT_LINK_DOTFILES"
+    done
     finish_progress
 fi
 

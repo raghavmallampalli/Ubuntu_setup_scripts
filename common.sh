@@ -74,31 +74,41 @@ backup_and_delete() {
         return 0
     fi
 
-    if [ ! -f "$file" ]; then
-        log "INFO" "$file is a symbolic link. Deleting."
-        rm "$file"
-        return 0
+    if is_symlink "$file"; then
+        log "INFO" "$file is a symbolic link"
+        if [ -f "$(readlink "$file")" ]; then
+            cp -L "$file" "$backup_path" || {
+                log "ERROR" "Failed to backup symlink target $file"
+                return 3
+            }
+        fi
+        rm "$file" || {
+            log "ERROR" "Failed to remove symlink $file"
+            return 4
+        }
+    else
+        cp -L "$file" "$backup_path" || {
+            log "ERROR" "Failed to backup $file"
+            return 3
+        }
+        rm "$file" || {
+            log "ERROR" "Failed to delete $file"
+            return 4
+        }
     fi
-
-    # copy the file to backup directory with the same name
-    if ! cp -L "$file" "$backup_path"; then
-        log "ERROR" "Failed to copy $file to $backup_path"
-        return 3
-    fi
-    log "INFO" "Backed up $file to $backup_path"
-
-    # delete the original file
-    if ! rm "$file"; then
-        log "ERROR" "Failed to delete $file"
-        return 4
-    fi
-    log "INFO" "Deleted $file"
+    log "INFO" "Backed up and removed $file"
 }
 
 # Improved dotfile installation
 install_dotfile() {
     local src="$1"
     local dest="$2"
+    local soft_link="${3:-false}"
+    if [ "$soft_link" = "true" ]; then
+        soft_link=true
+    else
+        soft_link=false
+    fi
     
     show_progress "Installing $(basename "$src")"
     if [ ! -f "$src" ]; then
@@ -108,7 +118,12 @@ install_dotfile() {
     fi
     
     backup_and_delete "$dest"
-    cp "$src" "$dest"
+
+    if [ "$soft_link" = true ]; then
+        ln -s "$src" "$dest"
+    else
+        cp "$src" "$dest"
+    fi
     finish_progress
 }
 
@@ -143,4 +158,12 @@ validate_email() {
         return 1
     fi
     return 0
+}
+
+is_symlink() {
+    local file="$1"
+    if [ -L "$file" ]; then
+        return 0
+    fi
+    return 1
 }
