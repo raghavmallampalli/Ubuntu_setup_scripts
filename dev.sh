@@ -23,6 +23,7 @@ export ROOT_MODE
 
 # Gather all user input at the beginning
 read -p "Install uv? [y/n] " install_uv
+install_miniconda=n
 if [[ $install_uv != y ]]; then
     read -p "Install Miniconda? [y/n] " install_miniconda
 fi
